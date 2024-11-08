@@ -1,5 +1,6 @@
 package Obj.Main;
 
+import HuySystem.HuyString;
 import Obj.RankType;
 
 public class Customer extends BaseMainObj
@@ -11,11 +12,13 @@ public class Customer extends BaseMainObj
     //========================================Constructor=========================================
     public Customer()
     {
-        this.rankType = RankType.None;
+        super();
+        this.rankType = null;
     }
 
-    public Customer(RankType rankType)
+    public Customer(HuyString id, HuyString name, HuyString password, RankType rankType)
     {
+        super(id, name, password);
         this.rankType = rankType;
     }
 

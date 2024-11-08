@@ -18,9 +18,10 @@ public class Staff extends BaseMainObj
         this.moneyPerHour = new HuyFloat();
     }
 
-    public Staff(HuyString id, HuyString name, HuyInt workHour, HuyFloat moneyPerHour)
+    public Staff(HuyString id, HuyString name, HuyString password, HuyInt workHour,
+                 HuyFloat moneyPerHour)
     {
-        super(id, name);
+        super(id, name, password);
         this.workHour = workHour;
         this.moneyPerHour = moneyPerHour;
     }
