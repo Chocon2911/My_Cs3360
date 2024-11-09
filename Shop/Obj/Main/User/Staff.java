@@ -1,10 +1,11 @@
-package Obj.Main;
+package Obj.Main.User;
 
 import HuySystem.HuyString;
 import HuySystem.HuyFloat;
 import HuySystem.HuyInt;
+import Obj.ActiveShopSystem;
 
-public class Staff extends BaseMainObj
+public class Staff extends BaseUser
 {
     //==========================================Variable==========================================
     private HuyInt workHour;
@@ -18,10 +19,10 @@ public class Staff extends BaseMainObj
         this.moneyPerHour = new HuyFloat();
     }
 
-    public Staff(HuyString id, HuyString name, HuyString password, HuyInt workHour,
-                 HuyFloat moneyPerHour)
+    public Staff(HuyString id, HuyString name, HuyString password,
+                 ActiveShopSystem activeShopSystem, HuyInt workHour, HuyFloat moneyPerHour)
     {
-        super(id, name, password);
+        super(id, name, password, activeShopSystem);
         this.workHour = workHour;
         this.moneyPerHour = moneyPerHour;
     }
