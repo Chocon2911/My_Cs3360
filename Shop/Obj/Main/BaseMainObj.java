@@ -1,24 +1,20 @@
 package Obj.Main;
 
-import HuySystem.HuyString;
-import HuySystem.HuyInt;
-import HuySystem.HuyFloat;
-
 public class BaseMainObj extends Obj.BaseObj
 {
     //==========================================Variable==========================================
-    private HuyString name;
-    private HuyString password;
+    private String name;
+    private String password;
 
     //========================================Constructor=========================================
     public BaseMainObj()
     {
         super();
-        this.name = new HuyString();
-        this.password = new HuyString();
+        this.name = "";
+        this.password = "";
     }
 
-    public BaseMainObj(HuyString id, HuyString name, HuyString password)
+    public BaseMainObj(String id, String name, String password)
     {
         super(id);
         this.name = name;
@@ -26,9 +22,9 @@ public class BaseMainObj extends Obj.BaseObj
     }
 
     //==========================================Get Set===========================================
-    public HuyString getName() { return this.name; }
-    public HuyString getPassword() { return this.password; }
+    public String getName() { return this.name; }
+    public String getPassword() { return this.password; }
 
-    public void setName(HuyString name) { this.name = name; }
-    public void setPassword(HuyString password) { this.password = password; }
+    public void setName(String name) { this.name = name; }
+    public void setPassword(String password) { this.password = password; }
 }

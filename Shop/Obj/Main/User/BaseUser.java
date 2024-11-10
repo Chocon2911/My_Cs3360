@@ -1,6 +1,5 @@
 package Obj.Main.User;
 
-import HuySystem.HuyString;
 import Obj.ActiveShopSystem;
 import Obj.Main.BaseMainObj;
 
@@ -16,7 +15,7 @@ public class BaseUser extends BaseMainObj
         this.activeShopSystem = new ActiveShopSystem();
     }
 
-    public BaseUser(HuyString id, HuyString name, HuyString password,
+    public BaseUser(String id, String name, String password,
                     ActiveShopSystem activeShopSystem)
     {
         super(id, name, password);

@@ -1,26 +1,24 @@
 package Obj.Main;
 
-import HuySystem.HuyString;
-
 public class ShopSystem extends BaseMainObj
 {
     //==========================================Variable==========================================
-    private HuyString systemCode;
+    private String systemCode;
 
     //========================================Constructor=========================================
     public ShopSystem()
     {
         super();
-        this.systemCode = new HuyString();
+        this.systemCode = "";
     }
 
-    public ShopSystem(HuyString id, HuyString name, HuyString password, HuyString systemCode)
+    public ShopSystem(String id, String name, String password, String systemCode)
     {
         super(id, name, password);
         this.systemCode = systemCode;
     }
 
     //==========================================Get Set===========================================
-    public HuyString getSystemCode() { return this.systemCode; }
-    public void setSystemCode(HuyString systemCode) { this.systemCode = systemCode; }
+    public String getSystemCode() { return this.systemCode; }
+    public void setSystemCode(String systemCode) { this.systemCode = systemCode; }
 }

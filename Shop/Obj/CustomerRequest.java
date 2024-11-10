@@ -1,9 +1,7 @@
 package Obj;
 
-import HuySystem.HuyString;
 import Obj.Main.User.Customer;
 import Obj.Main.User.Staff;
-import com.sun.net.httpserver.Request;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +22,7 @@ public class CustomerRequest extends BaseObj
         this.requestedItemAmounts = new ArrayList<ItemAmount>();
     }
 
-    public CustomerRequest(HuyString id, Customer requestedCustomer, Staff handledStaff,
+    public CustomerRequest(String id, Customer requestedCustomer, Staff handledStaff,
                            List<ItemAmount> requestedItemAmounts)
     {
         super(id);
@@ -37,6 +35,17 @@ public class CustomerRequest extends BaseObj
     public Customer getRequestedCustomer() { return this.requestedCustomer; }
     public Staff getHandledStaff() { return this.handledStaff; }
     public List<ItemAmount> getRequestedItemAmounts() { return this.requestedItemAmounts; }
+
+    public float getTotalPrice()
+    {
+        float totalMoney = 0;
+        for (int i = 0; i < this.requestedItemAmounts.size(); i++)
+        {
+            totalMoney += this.requestedItemAmounts.get(i).getAmount();
+        }
+
+        return totalMoney;
+    }
 
     //============================================Set=============================================
     public void setRequestedCustomer(Customer requestedCustomer)

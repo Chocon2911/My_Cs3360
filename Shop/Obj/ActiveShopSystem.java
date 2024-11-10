@@ -1,11 +1,15 @@
 package Obj;
 
-import HuySystem.HuyString;
 import Obj.Main.ShopSystem;
 import Obj.Main.User.Customer;
 import Obj.Main.User.Manager;
 import Obj.Main.User.Staff;
 
+import java.sql.*;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,6 +24,8 @@ public class ActiveShopSystem extends BaseObj
     private List<ItemAmount> soldItemAmount;
     private List<CustomerRequest> customerRequests;
 
+    private String dataBaseUrl = "jdbc:sqlite:./DataBase/Shop.db";
+
     //========================================Constructor=========================================
     public ActiveShopSystem()
     {
@@ -32,7 +38,7 @@ public class ActiveShopSystem extends BaseObj
         this.customerRequests = new ArrayList<>();
     }
 
-    public ActiveShopSystem(HuyString id, HuyString name, List<Manager> activeManager,
+    public ActiveShopSystem(String id, String name, List<Manager> activeManager,
                             List<Staff> activeStaff, List<Customer> activeCustomer,
                             List<ItemAmount> unSoldItem, List<ItemAmount> soldItem,
                             List<CustomerRequest> customerRequest)
@@ -72,4 +78,97 @@ public class ActiveShopSystem extends BaseObj
 
     public void setCustomerRequests(List<CustomerRequest> customerRequests)
     { this.customerRequests = customerRequests; }
+
+    //==========================================DataBase==========================================
+    //===========================================Staff============================================
+    // Connection
+    public Connection getConnectionToStaffDb()
+    {
+        try (Connection conn = DriverManager.getConnection(this.dataBaseUrl))
+        {
+            if (conn == null)
+            {
+                System.out.println("Connection is null");
+            }
+
+            return conn;
+        }
+        catch (SQLException e)
+        {
+            System.out.println(e.getMessage());
+            throw new RuntimeException(e);
+        }
+    }
+
+    // Create Table
+    public void createStaffTable()
+    {
+        Connection conn = getConnectionToStaffDb();
+        if (conn == null)
+        {
+            System.out.println("Connection is null");
+            return;
+        }
+
+        String createTable = "CREATE TABLE IF NOT EXISTS Staffs "
+                + "("
+                + "Id INTEGER UNIQUE NOT NULL, "
+                + "Name TEXT NOT NULL, "
+                + "Password TEXT NOT NULL, "
+                + "WorkHour INTEGER NOT NULL,"
+                + "MoneyPerHour FLOAT NOT NULL,"
+                + ");";
+        try (Statement statement = conn.createStatement())
+        {
+            statement.execute(createTable);
+            System.out.println("Created new StaffTable");
+        }
+        catch (SQLException e)
+        {
+            System.out.println(e.getMessage());
+            throw new RuntimeException(e);
+        }
+    }
+
+    // Insert Data
+    public void insertStaffData(int id, String name, String password, int workHour, int moneyPerHour)
+    {
+        Connection conn = getConnectionToStaffDb();
+        if (conn == null)
+        {
+            System.out.println("Connection is null");
+            return;
+        }
+
+        String insertData = "INSERT INTO Staffs (Id, Name, Password, WorkHour, MoneyPerHour) VALUES (?, ?, ?, ?, ?)";
+        try (PreparedStatement preStatement = conn.prepareStatement(insertData))
+        {
+            preStatement.setInt(1, id);
+            preStatement.setString(2, name);
+            preStatement.setString(3, password);
+            preStatement.setInt(4, workHour);
+            preStatement.setInt(5, moneyPerHour);
+            preStatement.executeUpdate();
+        }
+        catch (SQLException e)
+        {
+            System.out.println(e.getMessage());
+            throw new RuntimeException(e);
+        }
+    }
+
+    // Query Data
+    public Staff queryStaffData(int id)
+    {
+        String query = "SELECT * FROM Staffs WHERE Id = ?";
+        Connection conn = getConnectionToStaffDb();
+        if (conn == null)
+        {
+            System.out.println("Connection is null");
+            return null;
+        }
+
+        return null;
+        // TODO: Conitnue here
+    }
 }

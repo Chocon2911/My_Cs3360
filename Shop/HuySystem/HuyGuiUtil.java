@@ -17,4 +17,11 @@ public class HuyGuiUtil
         component.setAlignmentX(Component.CENTER_ALIGNMENT);
         component.setAlignmentY(Component.CENTER_ALIGNMENT);
     }
+
+    protected JButton createButton(String name, int width, int height)
+    {
+        JButton button = new JButton(name);
+        this.setFixedSize(button, width, height);
+        return button;
+    }
 }

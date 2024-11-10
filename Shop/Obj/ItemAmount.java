@@ -1,14 +1,12 @@
 package Obj;
 
-import HuySystem.HuyInt;
-import HuySystem.HuyString;
 import Obj.Main.Item;
 
 public class ItemAmount extends BaseObj
 {
     //==========================================Variable==========================================
     private Item item;
-    private HuyInt amount;
+    private int amount;
     private ItemStateType stateType;
 
     //========================================Constructor=========================================
@@ -17,10 +15,10 @@ public class ItemAmount extends BaseObj
         super();
         this.item = new Item();
         this.stateType = null;
-        this.amount = new HuyInt();
+        this.amount = -1;
     }
 
-    public ItemAmount(HuyString id, Item item, ItemStateType stateType, HuyInt amount)
+    public ItemAmount(String id, Item item, ItemStateType stateType, int amount)
     {
         super(id);
         this.item = item;
@@ -30,11 +28,16 @@ public class ItemAmount extends BaseObj
 
     //============================================Get=============================================
     public Item getItem() { return this.item; }
-    public HuyInt getAmount() { return this.amount; }
+    public int getAmount() { return this.amount; }
     public ItemStateType getStateType() { return this.stateType; }
+
+    public float getTotalPrice()
+    {
+        return this.item.getPrice() * this.amount;
+    }
 
     //===========================================Modify===========================================
     public void setItem(Item item) { this.item = item; }
-    public void setAmount(HuyInt amount) { this.amount = amount; }
+    public void setAmount(int amount) { this.amount = amount; }
     public void setStateType(ItemStateType stateType) { this.stateType = stateType; }
 }

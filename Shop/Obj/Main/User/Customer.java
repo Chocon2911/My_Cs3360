@@ -1,8 +1,6 @@
 package Obj.Main.User;
 
-import HuySystem.HuyString;
 import Obj.ActiveShopSystem;
-import Obj.Main.BaseMainObj;
 import Obj.RankType;
 
 public class Customer extends BaseUser
@@ -18,7 +16,7 @@ public class Customer extends BaseUser
         this.rankType = null;
     }
 
-    public Customer(HuyString id, HuyString name, HuyString password,
+    public Customer(String id, String name, String password,
                     ActiveShopSystem activeShopSystem, RankType rankType)
     {
         super(id, name, password, activeShopSystem);

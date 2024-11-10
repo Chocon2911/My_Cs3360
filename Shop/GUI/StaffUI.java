@@ -4,18 +4,13 @@ import HuySystem.HuyGuiUtil;
 import Obj.Main.User.Staff;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class StaffUI extends HuyGuiUtil
 {
     private Staff staff;
-
-    //============================================Test============================================
-    public static void main(String[] arg)
-    {
-        new StaffUI();
-    }
 
     //========================================Constructor=========================================
     public StaffUI()
@@ -43,8 +38,7 @@ public class StaffUI extends HuyGuiUtil
         panel.add(Box.createVerticalGlue());
 
         // informationButton
-        JButton informationButton = new JButton("Information");
-        this.setFixedSize(informationButton, 200, 50);
+        JButton informationButton = createButton("Information", 200, 50);
         this.setAlignmentCenter(informationButton);
         informationButton.addActionListener(new ActionListener()
         {
@@ -60,10 +54,8 @@ public class StaffUI extends HuyGuiUtil
         panel.add(Box.createVerticalStrut(20));
 
         // customerRequestButton
-        JButton customerRequestButton = new JButton("Customer Request");
-        this.setFixedSize(customerRequestButton, 200, 50);
+        JButton customerRequestButton = createButton("Customer Request", 200, 50);
         this.setAlignmentCenter(customerRequestButton);
-
         customerRequestButton.addActionListener(new ActionListener()
         {
             @Override
@@ -78,10 +70,8 @@ public class StaffUI extends HuyGuiUtil
         panel.add(Box.createVerticalStrut(20));
 
         // checkButton
-        JButton checkButton = new JButton("Check In");
-        this.setFixedSize(checkButton, 200, 50);
+        JButton checkButton = createButton("Check In/Out", 200, 50);
         this.setAlignmentCenter(checkButton);
-
         checkButton.addActionListener(new ActionListener()
         {
             @Override
@@ -96,19 +86,8 @@ public class StaffUI extends HuyGuiUtil
         panel.add(Box.createVerticalStrut(20));
 
         // quitButton
-        JButton quitButton = new JButton("Quit");
-        this.setFixedSize(quitButton, 200, 50);
+        JButton quitButton = createButton("Quit", 200, 50);
         this.setAlignmentCenter(quitButton);
-
-        quitButton.addActionListener(new ActionListener()
-        {
-            @Override
-            public void actionPerformed(ActionEvent e)
-            {
-                frame.dispose();
-                displayQuit();
-            }
-        });
 
         panel.add(quitButton);
         panel.add(Box.createVerticalStrut(20));
@@ -133,34 +112,40 @@ public class StaffUI extends HuyGuiUtil
         panel.add(Box.createVerticalGlue());
 
         // searchButton
-        JButton searchButton = new JButton("Search By Date");
-        this.setFixedSize(searchButton, 200, 50);
+        JButton searchButton = createButton("Search By Date", 200, 50);
         this.setAlignmentCenter(searchButton);
+        searchButton.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                frame.dispose();
+                displaySearchInformation();
+            }
+        });
+
         panel.add(searchButton);
         panel.add(Box.createVerticalStrut(20));
 
         // privateInfoButton
-        JButton privateInfoButton = new JButton("Private Info");
-        this.setFixedSize(privateInfoButton, 200, 50);
+        JButton privateInfoButton = createButton("Private Info", 200, 50);
         this.setAlignmentCenter(privateInfoButton);
+        privateInfoButton.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                frame.dispose();
+                displayPrivateInformation();
+            }
+        });
+
         panel.add(privateInfoButton);
         panel.add(Box.createVerticalStrut(20));
 
         // quitButton
-        JButton quitButton = new JButton("Quit");
-        this.setFixedSize(quitButton, 200, 50);
+        JButton quitButton = createComeBackMainMenuButton(frame, "Quit", 200, 50);
         this.setAlignmentCenter(quitButton);
-
-        quitButton.addActionListener(new ActionListener()
-         {
-             @Override
-             public void actionPerformed(ActionEvent e)
-             {
-                 frame.dispose();
-                 displayMain();
-             }
-         });
-
         panel.add(quitButton);
         panel.add(Box.createVerticalGlue());
 
@@ -168,21 +153,69 @@ public class StaffUI extends HuyGuiUtil
         frame.setVisible(true);
     }
 
+    private void displaySearchInformation()
+    {
+
+    }
+
+    private void displayPrivateInformation()
+    {
+
+    }
+
     //======================================Customer Request======================================
     private void displayCustomerRequest()
     {
         // frame
         JFrame frame = new JFrame("Customer Request Menu");
+        frame.setLayout(new BorderLayout());
         frame.setSize(500, 600);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        // panel
+        // quitPanel
+        JPanel quitPanel = new JPanel();
+        quitPanel.setLayout(new BoxLayout(quitPanel, BoxLayout.Y_AXIS));
+
+        // quitButton
+        JButton quitButton = createComeBackMainMenuButton(frame, "Quit", 200, 50);
+        quitPanel.add(quitButton);
+
+        // customerReqPanel
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         panel.add(Box.createVerticalGlue());
 
+        // scrollPane
+        JScrollPane scrollPane = new JScrollPane(panel);
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        scrollPane.getVerticalScrollBar().setUnitIncrement(30);
+
         // customerRequests
-//        for (int customerReqIndex = 0; customerReqIndex < this.staff.getActiveShopSystem())
+//        int customerReqAmount = this.staff.getActiveShopSystem().getCustomerRequests().size();
+        for (int i = 0; i < 10; i++)
+        {
+            // customerReqButton
+            String customerReqId = "Button"; // this.staff.getActiveShopSystem().getCustomerRequests().get(i).getId();
+
+            JButton customerReqButton = new JButton("Staff ID: " + customerReqId);
+            this.setFixedSize(customerReqButton, 200, 50);
+            this.setAlignmentCenter(customerReqButton);
+            panel.add(customerReqButton);
+
+            // totalPriceLabel
+//            float customerReqTotalPrice = this.staff.getActiveShopSystem().getCustomerRequests().get(i).getTotalPrice();
+
+            JLabel totalPriceLabel = new JLabel("Total Price: " + 1000f);
+            this.setAlignmentCenter(totalPriceLabel);
+            panel.add(totalPriceLabel);
+            panel.add(Box.createVerticalStrut(20));
+        }
+
+        panel.add(Box.createVerticalGlue());
+
+        frame.add(scrollPane, BorderLayout.CENTER);
+        frame.add(quitPanel, BorderLayout.WEST);
+        frame.setVisible(true);
     }
 
     //========================================Check In/Out========================================
@@ -195,5 +228,27 @@ public class StaffUI extends HuyGuiUtil
     private void displayQuit()
     {
 
+    }
+
+    //===========================================Other============================================
+    private JButton createComeBackMainMenuButton(JFrame frame, String name, int width, int height)
+    {
+        JButton button = createButton(name, width, height);
+        button.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                frame.dispose();
+                displayMain();
+            }
+        });
+
+        return button;
+    }
+
+    //============================================Test============================================
+    public static void main(String[] arg)
+    {
+        new StaffUI();
     }
 }
