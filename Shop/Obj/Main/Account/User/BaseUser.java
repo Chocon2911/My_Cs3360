@@ -1,9 +1,10 @@
-package Obj.Main.User;
+package Obj.Main.Account.User;
 
 import Obj.ActiveShopSystem;
+import Obj.Main.Account.BaseAccount;
 import Obj.Main.BaseMainObj;
 
-public class BaseUser extends BaseMainObj
+public class BaseUser extends BaseAccount
 {
     //==========================================Variable==========================================
     private ActiveShopSystem activeShopSystem;

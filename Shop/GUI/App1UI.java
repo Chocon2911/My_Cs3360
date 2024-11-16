@@ -16,6 +16,12 @@ public class App1UI
         this.activeShopSystems = new ArrayList<ActiveShopSystem>();
     }
 
+    //==========================================Get Set===========================================
+    public List<ActiveShopSystem> getActiveShopSystems() { return activeShopSystems; }
+
+    public void setActiveShopSystems(List<ActiveShopSystem> activeShopSystems)
+    { this.activeShopSystems = activeShopSystems; }
+
     //======================================ChooseShopSystem======================================
     private void displayChooseShopSystem()
     {

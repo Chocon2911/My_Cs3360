@@ -1,7 +1,7 @@
 package GUI;
 
 import HuySystem.HuyGuiUtil;
-import Obj.Main.User.Staff;
+import Obj.Main.Account.User.Staff;
 
 import javax.swing.*;
 import java.awt.*;
@@ -25,7 +25,7 @@ public class StaffUI extends HuyGuiUtil
     }
 
     //============================================Main============================================
-    private void displayMain()
+    public void displayMain()
     {
         // frame
         JFrame frame = new JFrame("Staff Main Menu");

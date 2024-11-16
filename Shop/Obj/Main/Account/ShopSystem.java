@@ -1,6 +1,6 @@
-package Obj.Main;
+package Obj.Main.Account;
 
-public class ShopSystem extends BaseMainObj
+public class ShopSystem extends BaseAccount
 {
     //==========================================Variable==========================================
     private String systemCode;

@@ -1,4 +1,4 @@
-package Obj.Main.User;
+package Obj.Main.Account.User;
 
 import Obj.ActiveShopSystem;
 import Obj.RankType;

@@ -7,29 +7,29 @@ public class ItemAmount extends BaseObj
     //==========================================Variable==========================================
     private Item item;
     private int amount;
-    private ItemStateType stateType;
+    private boolean isSold;
 
     //========================================Constructor=========================================
     public ItemAmount()
     {
         super();
         this.item = new Item();
-        this.stateType = null;
         this.amount = -1;
+        this.isSold = false;
     }
 
-    public ItemAmount(String id, Item item, ItemStateType stateType, int amount)
+    public ItemAmount(String id, Item item, int amount, boolean isSold)
     {
         super(id);
         this.item = item;
-        this.stateType = stateType;
         this.amount = amount;
+        this.isSold = isSold;
     }
 
     //============================================Get=============================================
     public Item getItem() { return this.item; }
     public int getAmount() { return this.amount; }
-    public ItemStateType getStateType() { return this.stateType; }
+    public boolean getIsSold() { return this.isSold; }
 
     public float getTotalPrice()
     {
@@ -39,5 +39,5 @@ public class ItemAmount extends BaseObj
     //===========================================Modify===========================================
     public void setItem(Item item) { this.item = item; }
     public void setAmount(int amount) { this.amount = amount; }
-    public void setStateType(ItemStateType stateType) { this.stateType = stateType; }
+    public void setIsSold(boolean isSold) { this.isSold = isSold; }
 }

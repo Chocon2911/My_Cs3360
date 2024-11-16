@@ -1,7 +1,7 @@
 package Obj;
 
-import Obj.Main.User.Customer;
-import Obj.Main.User.Staff;
+import Obj.Main.Account.User.Customer;
+import Obj.Main.Account.User.Staff;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,7 +47,7 @@ public class CustomerRequest extends BaseObj
         return totalMoney;
     }
 
-    //============================================Set=============================================
+    //===========================================Modify===========================================
     public void setRequestedCustomer(Customer requestedCustomer)
     { this.requestedCustomer = requestedCustomer; }
 
