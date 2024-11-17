@@ -1,42 +1,59 @@
-package Obj;
+package Obj.Side;
 
 import DataBase.DataBase;
-import Obj.Main.Account.Shop;
-import Obj.Main.Account.User.User;
+import Obj.IShopChild;
+import Obj.Main.Shop;
+import Obj.Main.User;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class ActiveShop extends BaseObj
+public class ActiveShop implements IShopChild
 {
     //==========================================Variable==========================================
-    private Shop shop;
+    // ActiveShop
     private List<CustomerRequest> customerRequests;
     private List<User> activeUsers;
     private DataBase dataBase;
 
+    // IObj
+    private String id;
+
+    // IShopChild
+    private Shop shop;
+
     //========================================Constructor=========================================
     public ActiveShop()
     {
-        super();
+        // ActiveShop
         this.shop = new Shop();
         this.customerRequests = new ArrayList<>();
         this.activeUsers = new ArrayList<>();
         this.dataBase = new DataBase();
+
+        // IObj
+        this.id = "";
+
+        // IShopChild
+        this.shop = new Shop();
     }
 
     public ActiveShop(String id, Shop shop, List<CustomerRequest> customerRequest,
                       List<User> activeUsers, DataBase dataBase)
     {
-        super(id);
-        this.shop = shop;
+        // ActiveShop
         this.customerRequests = customerRequest;
         this.activeUsers = activeUsers;
         this.dataBase = dataBase;
+
+        // IObj
+        this.id = id;
+
+        // IShopChild
+        this.shop = shop;
     }
 
     //============================================Get=============================================
-    public Shop getShop() { return this.shop; }
     public List<User> getActiveUsers() { return this.activeUsers; }
     public List<CustomerRequest> getCustomerRequests() { return this.customerRequests; }
     public DataBase getDataBase() { return this.dataBase; }
@@ -64,8 +81,6 @@ public class ActiveShop extends BaseObj
     }
 
     //===========================================Modify===========================================
-    public void setShop(Shop shop)
-    { this.shop = shop; }
 
     public void setActiveUsers(List<User> activeUsers)
     { this.activeUsers = activeUsers; }
@@ -75,4 +90,30 @@ public class ActiveShop extends BaseObj
 
     public void setDataBase(DataBase dataBase)
     { this.dataBase = dataBase; }
+
+    //============================================IObj============================================
+    @Override
+    public String getId()
+    {
+        return this.id;
+    }
+
+    @Override
+    public void setId(String id)
+    {
+        this.id = id;
+    }
+
+    //=========================================IShopChild=========================================
+    @Override
+    public Shop getShop()
+    {
+        return this.shop;
+    }
+
+    @Override
+    public void setShop(Shop shop)
+    {
+        this.shop = shop;
+    }
 }

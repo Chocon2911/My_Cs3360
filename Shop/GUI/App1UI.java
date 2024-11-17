@@ -1,6 +1,6 @@
 package GUI;
 
-import Obj.ActiveShop;
+import Obj.Side.ActiveShop;
 
 import java.util.ArrayList;
 import java.util.List;

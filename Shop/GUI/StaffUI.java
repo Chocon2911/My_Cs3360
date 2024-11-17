@@ -1,7 +1,7 @@
 package GUI;
 
 import HuySystem.HuyGuiUtil;
-import Obj.Main.Account.User.User;
+import Obj.Main.User;
 import Obj.Main.Account.User.Staff;
 import Obj.UserType;
 

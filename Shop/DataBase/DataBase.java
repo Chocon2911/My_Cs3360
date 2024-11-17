@@ -2,14 +2,18 @@ package DataBase;
 
 import HuySystem.HuyUtil;
 import Obj.*;
-import Obj.Main.Account.User.User;
+import Obj.Main.User;
 import Obj.Main.Item;
-import Obj.Main.Account.Shop;
+import Obj.Main.Shop;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+
+import Obj.Side.ActiveShop;
+import Obj.Side.CustomerRequest;
+import Obj.Side.OrderedItem;
 import com.google.gson.Gson;
 
 public class DataBase extends HuyUtil
@@ -119,7 +123,7 @@ public class DataBase extends HuyUtil
     }
 
     // Query
-    public User queryUserData(String id, ActiveShop activeShop)
+    public User queryUserData(String id, Shop shop)
     {
         Connection conn = this.getConnection();
         if (conn == null) return null;
@@ -135,7 +139,7 @@ public class DataBase extends HuyUtil
                 int userTypeInt = data.getInt("UserType");
 
                 UserType userType = this.getUserTypeFromInt(userTypeInt);
-                return new User(id, name, password, activeShop, userType);
+                return new User(id, name, password, shop, userType);
             }
         }
         catch (Exception e)
@@ -146,7 +150,7 @@ public class DataBase extends HuyUtil
     }
 
     // Query All
-    public List<User> queryAllUserData(ActiveShop activeShop)
+    public List<User> queryAllUserData(Shop shop)
     {
         Connection conn = this.getConnection();
         if (conn == null) return null;
@@ -164,7 +168,7 @@ public class DataBase extends HuyUtil
                 int userTypeInt = data.getInt("UserType");
 
                 UserType userType = this.getUserTypeFromInt(userTypeInt);
-                users.add(new User(id, name, password, activeShop, userType));
+                users.add(new User(id, name, password, shop, userType));
             }
 
             System.out.println("Query All Users Data");
@@ -269,7 +273,7 @@ public class DataBase extends HuyUtil
     }
 
     // Query
-    public CustomerRequest queryCustomerRequestData(String id, ActiveShop activeShop)
+    public CustomerRequest queryCustomerRequestData(String id, Shop shop)
     {
         Connection conn = getConnection();
         if (conn == null) return null;
@@ -285,7 +289,7 @@ public class DataBase extends HuyUtil
                 String itemAmounts_Json = data.getString("ItemAmounts_Json");
 
                 System.out.println("Query Customer Request Data");
-                return getCustomerRequestFromRawData(id, customerId, staffId, itemAmounts_Json, activeShop);
+                return getCustomerRequestFromRawData(id, customerId, staffId, itemAmounts_Json, shop);
             }
         }
         catch (Exception e)
@@ -296,7 +300,7 @@ public class DataBase extends HuyUtil
     }
 
     // Query All
-    public List<CustomerRequest> queryAllCustomerRequestData(ActiveShop activeShop)
+    public List<CustomerRequest> queryAllCustomerRequestData(Shop shop)
     {
         Connection conn = getConnection();
         if (conn == null) return null;
@@ -313,7 +317,7 @@ public class DataBase extends HuyUtil
                 String staffId = data.getString("StaffId");
                 String itemAmounts_Json = data.getString("ItemAmounts_Json");
 
-                customerRequests.add(this.getCustomerRequestFromRawData(id, customerId, staffId, itemAmounts_Json, activeShop));
+                customerRequests.add(this.getCustomerRequestFromRawData(id, customerId, staffId, itemAmounts_Json, shop));
             }
             System.out.println("Query All CustomerRequests");
             return customerRequests;
@@ -376,21 +380,21 @@ public class DataBase extends HuyUtil
     }
 
     // Other
-    private CustomerRequest getCustomerRequestFromRawData(String id, String customerId, String staffId, String itemAmounts_Json, ActiveShop activeShop)
+    private CustomerRequest getCustomerRequestFromRawData(String id, String customerId, String staffId, String itemAmounts_Json, Shop shop)
     {
         Gson gson = new Gson();
 
-        User staff = this.queryUserData(staffId, activeShop);
-        User customer = this.queryUserData(customerId, activeShop);
+        User staff = this.queryUserData(staffId, shop);
+        User customer = this.queryUserData(customerId, shop);
 
         List<String> itemAmountIds = gson.fromJson(itemAmounts_Json, List.class);
         List<OrderedItem> orderedItems = new ArrayList<>();
         for (String itemAmountId : itemAmountIds)
         {
-            orderedItems.add(this.queryOrderedItemData(itemAmountId));
+            orderedItems.add(this.queryOrderedItemData(itemAmountId, shop));
         }
 
-        return new CustomerRequest(id, customer, staff, orderedItems);
+        return new CustomerRequest(id, shop, customer, staff, orderedItems);
     }
     //============================================Item============================================
     // Create Table
@@ -457,7 +461,7 @@ public class DataBase extends HuyUtil
     }
 
     // Query
-    public Item queryItemData(String id)
+    public Item queryItemData(String id, Shop shop)
     {
         Connection conn = getConnection();
         if (conn == null) return null;
@@ -479,7 +483,7 @@ public class DataBase extends HuyUtil
                 List<OrderedItem> orderedItems = gson.fromJson(ItemAmounts_Json, List.class);
 
                 System.out.println("Query Item Data");
-                return new Item(id, name, price, itemType, initAmount, orderedItems, description);
+                return new Item(id, name, shop, price, itemType, initAmount, orderedItems, description);
 
             }
         }
@@ -491,7 +495,7 @@ public class DataBase extends HuyUtil
     }
 
     // Query All
-    public List<Item> queryAllItemData()
+    public List<Item> queryAllItemData(Shop shop)
     {
         Connection conn = getConnection();
         if (conn == null) return null;
@@ -516,7 +520,7 @@ public class DataBase extends HuyUtil
                 ItemType itemType = getItemTypeFromInt(itemTypeInt);
                 List<OrderedItem> orderedItems = gson.fromJson(ItemAmounts_Json, List.class);
 
-                Item newItem = new Item(id, name, price, itemType, initAmount, orderedItems, description);
+                Item newItem = new Item(id, name, shop, price, itemType, initAmount, orderedItems, description);
                 items.add(newItem);
             }
 
@@ -633,7 +637,7 @@ public class DataBase extends HuyUtil
     }
 
     // Query
-    public OrderedItem queryOrderedItemData(String id)
+    public OrderedItem queryOrderedItemData(String id, Shop shop)
     {
         Connection conn = getConnection();
         if (conn == null) return null;
@@ -648,10 +652,10 @@ public class DataBase extends HuyUtil
                 int amount = data.getInt("Amount");
                 boolean isSold = data.getBoolean("IsSold");
 
-                Item item = this.queryItemData(itemId);
+                Item item = this.queryItemData(itemId, shop);
 
                 System.out.println("Query OrderedItems Data");
-                return new OrderedItem(id, item, amount, isSold);
+                return new OrderedItem(id, shop, item, amount, isSold);
             }
         }
         catch (Exception e)
@@ -661,7 +665,7 @@ public class DataBase extends HuyUtil
         }
     }
 
-    public List<OrderedItem> queryAllOrderedItemData()
+    public List<OrderedItem> queryAllOrderedItemData(Shop shop)
     {
         Connection conn = getConnection();
         if (conn == null) return null;
@@ -679,8 +683,8 @@ public class DataBase extends HuyUtil
                 int amount = data.getInt("Amount");
                 boolean isSold = data.getBoolean("IsSold");
 
-                Item item = this.queryItemData(itemId);
-                orderedItems.add(new OrderedItem(id, item, amount, isSold));
+                Item item = this.queryItemData(itemId, shop);
+                orderedItems.add(new OrderedItem(id, shop, item, amount, isSold));
             }
 
             System.out.println("Query All OrderedItems");
@@ -1060,13 +1064,13 @@ public class DataBase extends HuyUtil
         List<CustomerRequest> customerRequests = new ArrayList<>();
         for (String customerRequestId : customerRequestIds)
         {
-            customerRequests.add(this.queryCustomerRequestData(customerRequestId, activeShop));
+            customerRequests.add(this.queryCustomerRequestData(customerRequestId, shop));
         }
 
         List<User> activeUsers = new ArrayList<>();
         for (String userid : activeUserIds)
         {
-            activeUsers.add(this.queryUserData(userid, activeShop));
+            activeUsers.add(this.queryUserData(userid, shop));
         }
 
         activeShop = new ActiveShop(id, shop, customerRequests, activeUsers, this);
