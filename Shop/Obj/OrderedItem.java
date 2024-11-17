@@ -2,7 +2,7 @@ package Obj;
 
 import Obj.Main.Item;
 
-public class ItemAmount extends BaseObj
+public class OrderedItem extends BaseObj
 {
     //==========================================Variable==========================================
     private Item item;
@@ -10,7 +10,7 @@ public class ItemAmount extends BaseObj
     private boolean isSold;
 
     //========================================Constructor=========================================
-    public ItemAmount()
+    public OrderedItem()
     {
         super();
         this.item = new Item();
@@ -18,7 +18,7 @@ public class ItemAmount extends BaseObj
         this.isSold = false;
     }
 
-    public ItemAmount(String id, Item item, int amount, boolean isSold)
+    public OrderedItem(String id, Item item, int amount, boolean isSold)
     {
         super(id);
         this.item = item;

@@ -1,6 +1,6 @@
 package Obj.Main;
 
-import Obj.ItemAmount;
+import Obj.OrderedItem;
 import Obj.ItemType;
 
 import java.util.ArrayList;
@@ -12,7 +12,7 @@ public class Item extends BaseMainObj
     private float price;
     private ItemType itemType;
     private int initAmount;
-    private List<ItemAmount> itemAmounts;
+    private List<OrderedItem> orderedItems;
     private String description;
 
     //========================================Constructor=========================================
@@ -22,18 +22,18 @@ public class Item extends BaseMainObj
         this.price = -1;
         this.itemType = null;
         this.initAmount = -1;
-        this.itemAmounts = new ArrayList<>();
+        this.orderedItems = new ArrayList<>();
         this.description = "";
     }
 
     public Item(String id, String name, float price, ItemType itemType,
-                int unSoldAmount, List<ItemAmount> itemAmounts, String description)
+                int unSoldAmount, List<OrderedItem> orderedItems, String description)
     {
         super(id, name);
         this.price = price;
         this.itemType = itemType;
         this.initAmount = unSoldAmount;
-        this.itemAmounts = itemAmounts;
+        this.orderedItems = orderedItems;
         this.description = description;
     }
 
@@ -41,16 +41,16 @@ public class Item extends BaseMainObj
     public float getPrice() { return this.price; }
     public ItemType getItemType() { return this.itemType; }
     public int getInitAmount() { return this.initAmount; }
-    public List<ItemAmount> getItemAmounts() { return this.itemAmounts; }
+    public List<OrderedItem> getItemAmounts() { return this.orderedItems; }
     public String getDescription() { return this.description; }
 
     public int getSoldAmount()
     {
         int soldAmount = 0;
-        for (ItemAmount itemAmount : this.itemAmounts)
+        for (OrderedItem orderedItem : this.orderedItems)
         {
-            if (!itemAmount.getIsSold()) continue;
-            soldAmount += itemAmount.getAmount();
+            if (!orderedItem.getIsSold()) continue;
+            soldAmount += orderedItem.getAmount();
         }
 
         return soldAmount;
@@ -59,10 +59,10 @@ public class Item extends BaseMainObj
     public int getUnSoldAmount()
     {
         int unSoldAmount = 0;
-        for (ItemAmount itemAmount : this.itemAmounts)
+        for (OrderedItem orderedItem : this.orderedItems)
         {
-            if (!itemAmount.getIsSold()) continue;
-            unSoldAmount += itemAmount.getAmount();
+            if (!orderedItem.getIsSold()) continue;
+            unSoldAmount += orderedItem.getAmount();
         }
 
         return unSoldAmount;
@@ -72,6 +72,6 @@ public class Item extends BaseMainObj
     public void setPrice(float price) { this.price = price; }
     public void setItemType(ItemType itemType) { this.itemType = itemType; }
     public void setInitAmount(int initAmount) { this.initAmount = initAmount; }
-    public void setItemAmounts(List<ItemAmount> itemAmounts) { this.itemAmounts = itemAmounts; }
+    public void setItemAmounts(List<OrderedItem> orderedItems) { this.orderedItems = orderedItems; }
     public void setDescription(String description) { this.description = description; }
 }

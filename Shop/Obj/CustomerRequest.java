@@ -1,7 +1,6 @@
 package Obj;
 
-import Obj.Main.Account.User.Customer;
-import Obj.Main.Account.User.Staff;
+import Obj.Main.Account.User.User;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,51 +8,51 @@ import java.util.List;
 public class CustomerRequest extends BaseObj
 {
     //==========================================Variable==========================================
-    private Customer requestedCustomer;
-    private Staff handledStaff;
-    private List<ItemAmount> requestedItemAmounts;
+    private User requestedCustomer;
+    private User handledStaff;
+    private List<OrderedItem> requestedOrderedItems;
 
     //========================================Constructor=========================================
     public CustomerRequest()
     {
         super();
-        this.requestedCustomer = new Customer();
-        this.handledStaff = new Staff();
-        this.requestedItemAmounts = new ArrayList<ItemAmount>();
+        this.requestedCustomer = new User();
+        this.handledStaff = new User();
+        this.requestedOrderedItems = new ArrayList<OrderedItem>();
     }
 
-    public CustomerRequest(String id, Customer requestedCustomer, Staff handledStaff,
-                           List<ItemAmount> requestedItemAmounts)
+    public CustomerRequest(String id, User requestedCustomer, User handledStaff,
+                           List<OrderedItem> requestedOrderedItems)
     {
         super(id);
         this.requestedCustomer = requestedCustomer;
         this.handledStaff = handledStaff;
-        this.requestedItemAmounts = requestedItemAmounts;
+        this.requestedOrderedItems = requestedOrderedItems;
     }
 
     //============================================Get=============================================
-    public Customer getRequestedCustomer() { return this.requestedCustomer; }
-    public Staff getHandledStaff() { return this.handledStaff; }
-    public List<ItemAmount> getRequestedItemAmounts() { return this.requestedItemAmounts; }
+    public User getRequestedCustomer() { return this.requestedCustomer; }
+    public User getHandledStaff() { return this.handledStaff; }
+    public List<OrderedItem> getRequestedItemAmounts() { return this.requestedOrderedItems; }
 
     public float getTotalPrice()
     {
         float totalMoney = 0;
-        for (int i = 0; i < this.requestedItemAmounts.size(); i++)
+        for (int i = 0; i < this.requestedOrderedItems.size(); i++)
         {
-            totalMoney += this.requestedItemAmounts.get(i).getAmount();
+            totalMoney += this.requestedOrderedItems.get(i).getAmount();
         }
 
         return totalMoney;
     }
 
     //===========================================Modify===========================================
-    public void setRequestedCustomer(Customer requestedCustomer)
+    public void setRequestedCustomer(User requestedCustomer)
     { this.requestedCustomer = requestedCustomer; }
 
-    public void setHandledStaff(Staff handledStaff)
+    public void setHandledStaff(User handledStaff)
     { this.handledStaff = handledStaff; }
 
-    public void setRequestedItemAmounts(List<ItemAmount> requestedItemAmounts)
-    { this.requestedItemAmounts = requestedItemAmounts; }
+    public void setRequestedItemAmounts(List<OrderedItem> requestedOrderedItems)
+    { this.requestedOrderedItems = requestedOrderedItems; }
 }

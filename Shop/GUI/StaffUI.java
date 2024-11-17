@@ -1,7 +1,9 @@
 package GUI;
 
 import HuySystem.HuyGuiUtil;
+import Obj.Main.Account.User.User;
 import Obj.Main.Account.User.Staff;
+import Obj.UserType;
 
 import javax.swing.*;
 import java.awt.*;
@@ -10,13 +12,14 @@ import java.awt.event.ActionListener;
 
 public class StaffUI extends HuyGuiUtil
 {
-    private Staff staff;
+    private User staff;
 
     //========================================Constructor=========================================
     public StaffUI()
     {
         this.displayMain();
-        staff = new Staff();
+        staff = new User();
+        staff.setUserType(UserType.Staff);
     }
 
     public StaffUI(Staff staff)

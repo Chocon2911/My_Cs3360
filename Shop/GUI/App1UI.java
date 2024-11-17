@@ -1,6 +1,6 @@
 package GUI;
 
-import Obj.ActiveShopSystem;
+import Obj.ActiveShop;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,19 +8,19 @@ import java.util.List;
 public class App1UI
 {
     //==========================================Variable==========================================
-    private List<ActiveShopSystem> activeShopSystems;
+    private List<ActiveShop> activeShops;
 
     //========================================Constructor=========================================
     public App1UI()
     {
-        this.activeShopSystems = new ArrayList<ActiveShopSystem>();
+        this.activeShops = new ArrayList<ActiveShop>();
     }
 
     //==========================================Get Set===========================================
-    public List<ActiveShopSystem> getActiveShopSystems() { return activeShopSystems; }
+    public List<ActiveShop> getActiveShopSystems() { return activeShops; }
 
-    public void setActiveShopSystems(List<ActiveShopSystem> activeShopSystems)
-    { this.activeShopSystems = activeShopSystems; }
+    public void setActiveShopSystems(List<ActiveShop> activeShops)
+    { this.activeShops = activeShops; }
 
     //======================================ChooseShopSystem======================================
     private void displayChooseShopSystem()

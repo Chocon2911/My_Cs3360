@@ -2,11 +2,9 @@ package DataBase;
 
 import HuySystem.HuyUtil;
 import Obj.*;
+import Obj.Main.Account.User.User;
 import Obj.Main.Item;
-import Obj.Main.Account.ShopSystem;
-import Obj.Main.Account.User.Customer;
-import Obj.Main.Account.User.Manager;
-import Obj.Main.Account.User.Staff;
+import Obj.Main.Account.Shop;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -75,52 +73,43 @@ public class DataBase extends HuyUtil
         }
     }
 
-    //===========================================Staff============================================
+    //============================================User============================================
     // Create Table
-    public void createStaffTable()
+    public void createUserTable()
     {
-        String createTable = "CREATE TABLE IF NOT EXISTS Staffs "
+        String create = "CREATE TABLE IF NOT EXISTS Users"
                 + "("
                 + "Id TEXT UNIQUE PRIMARY KEY NOT NULL, "
                 + "Name TEXT NOT NULL, "
                 + "Password TEXT NOT NULL, "
-                + "WorkHour INTEGER NOT NULL, "
-                + "MoneyPerHour FLOAT NOT NULL"
+                + "UserType INTEGER NOT NULL"
                 + ");";
 
-        if (this.createTable(createTable))
+        if (this.createTable(create))
         {
-            System.out.println("Create Staffs Table Success");
+            System.out.println("Create User Table Success");
             return;
         }
 
-        System.out.println("Create Staffs Table Fail");
+        System.out.println("Create User Table Failed");
     }
 
-    // Insert Data
-    public void insertStaffData(Staff staff)
+    // Insert
+    public void insertUserData(User user)
     {
-        Connection conn = getConnection();
+        Connection conn = this.getConnection();
         if (conn == null) return;
 
-        String id = staff.getId();
-        String name = staff.getName();
-        String password = staff.getPassword();
-        int workHour = staff.getWorkHour();
-        float moneyPerHour = staff.getMoneyPerHour();
-
-        String insertData = "INSERT INTO Staffs (Id, Name, Password, WorkHour, MoneyPerHour) "
-                + "VALUES (?, ?, ?, ?, ?)";
-        try (PreparedStatement preStatement = conn.prepareStatement(insertData))
+        String insert = "INSERT INTO Users (Id, Name, Password, UserType) VALUES (?, ?, ?, ?)";
+        try (PreparedStatement preStatement = conn.prepareStatement(insert))
         {
-            preStatement.setString(1, id);
-            preStatement.setString(2, name);
-            preStatement.setString(3, password);
-            preStatement.setInt(4, workHour);
-            preStatement.setFloat(5, moneyPerHour);
+            preStatement.setString(1, user.getId());
+            preStatement.setString(2, user.getName());
+            preStatement.setString(3, user.getPassword());
+            preStatement.setInt(4, this.getIntFromUserType(user.getUserType()));
             preStatement.executeUpdate();
 
-            System.out.println("Insert Staff: " + id + " - " + name + " - " + password + " - " + workHour + " - " + moneyPerHour);
+            System.out.println("Insert User Data");
         }
         catch (Exception e)
         {
@@ -129,190 +118,24 @@ public class DataBase extends HuyUtil
         }
     }
 
-    // Query Data
-    public Staff queryStaffData(String id, ActiveShopSystem activeShopSystem)
+    // Query
+    public User queryUserData(String id, ActiveShop activeShop)
     {
-        String query = "SELECT * FROM Staffs WHERE Id = ?";
-        Connection conn = getConnection();
+        Connection conn = this.getConnection();
         if (conn == null) return null;
 
+        String query = "SELECT * FROM Users WHERE Id = ?";
         try (PreparedStatement preStatement = conn.prepareStatement(query))
         {
             preStatement.setString(1, id);
-            try (ResultSet data = preStatement.executeQuery(query);)
+            try (ResultSet data = preStatement.executeQuery())
             {
                 String name = data.getString("Name");
                 String password = data.getString("Password");
-                int workHour = data.getInt("WorkHour");
-                float moneyPerHour = data.getFloat("MoneyPerHour");
+                int userTypeInt = data.getInt("UserType");
 
-                System.out.println("Query Staff: " + id + " - " + name + " - " + password + " - " + workHour + " - " + moneyPerHour);
-                return new Staff(id, name, password, activeShopSystem, workHour, moneyPerHour);
-            }
-        }
-        catch (Exception e)
-        {
-            System.out.println(e.getMessage());
-            throw new RuntimeException(e);
-        }
-    }
-
-    // Query All Data
-    public List<Staff> queryAllStaffData(ActiveShopSystem activeShopSystem)
-    {
-        Connection conn = getConnection();
-        if (conn == null) return null;
-
-        String query = "SELECT * FROM Staffs";
-        try (Statement statement = conn.createStatement();
-             ResultSet data = statement.executeQuery(query);)
-        {
-            List<Staff> staffs = new ArrayList<>();
-            while (data.next())
-            {
-                String id = data.getString("Id");
-                String name = data.getString("Name");
-                String password = data.getString("Password");
-                int workHour = data.getInt("WorkHour");
-                float moneyPerHour = data.getFloat("MoneyPerHour");
-
-                staffs.add(new Staff(id, name, password, activeShopSystem, workHour, moneyPerHour));
-            }
-
-            System.out.println("Query All Staff");
-            return staffs;
-        }
-        catch (Exception e)
-        {
-            System.out.println(e.getMessage());
-            throw new RuntimeException(e);
-        }
-    }
-
-    public void updateStaffData(Staff staff)
-    {
-        Connection conn = getConnection();
-        if (conn == null) return;
-
-        String id = staff.getId();
-        String name = staff.getName();
-        String password = staff.getPassword();
-        int workHour = staff.getWorkHour();
-        float moneyPerHour = staff.getMoneyPerHour();
-
-        String update = "UPDATE Staffs SET"
-                + " Name = ?, "
-                + "Password = ?, "
-                + "WorkHour = ?, "
-                + "MoneyPerHour = ? "
-                + "WHERE Id = ?";
-
-        try (PreparedStatement preStatement = conn.prepareStatement(update))
-        {
-            // Update Data
-            preStatement.setString(1, name);
-            preStatement.setString(2, password);
-            preStatement.setInt(3, workHour);
-            preStatement.setFloat(4, moneyPerHour);
-
-            // Where id is
-            preStatement.setString(5, id);
-            preStatement.executeUpdate();
-
-            System.out.println("Update Staff with id (" + id + "): " + name + " - " + password + " - " + workHour + " - " + moneyPerHour);
-        }
-        catch (SQLException e)
-        {
-            System.out.println(e.getMessage());
-            throw new RuntimeException(e);
-        }
-    }
-
-    // Delete Data
-    public void deleteStaffData(String id)
-    {
-        String delete = "Staffs";
-        if (this.deleteData(id, delete))
-        {
-            System.out.println("Delete Staff success");
-            return;
-        }
-
-        System.out.println("Delete Staff with id (" + id + ") failed");
-    }
-
-    //==========================================Customer==========================================
-    // Create Table
-    public void createCustomerTable()
-    {
-        String createTable = "CREATE TABLE IF NOT EXISTS Customers"
-                + "("
-                + "Id TEXT UNIQUE PRIMARY KEY NOT NULL, "
-                + "Name TEXT NOT NULL, "
-                + "Password TEXT NOT NULL, "
-                + "RankType INTEGER NOT NULL"
-                + ");";
-
-        if (this.createTable(createTable))
-        {
-            System.out.println("Create Customers Table Success");
-            return;
-        }
-
-        System.out.println("Create Customers Table Failed");
-    }
-
-    // Insert Data
-    public void insertCustomerData(Customer customer)
-    {
-        Connection conn = getConnection();
-        if (conn == null) return;
-
-        String id = customer.getId();
-        String name = customer.getName();
-        String password = customer.getPassword();
-        RankType rankType = customer.getRankType();
-
-        int rankTypeInt = this.getIntFromRankType(rankType);
-
-        String insertData = "INSERT INTO Customers (Id, Name, Password, RankType)"
-                + " VALUES (?, ?, ?, ?)";
-
-        try (PreparedStatement preStatement = conn.prepareStatement(insertData))
-        {
-            preStatement.setString(1, id);
-            preStatement.setString(2, name);
-            preStatement.setString(3, password);
-            preStatement.setInt(4, rankTypeInt);
-        }
-        catch (SQLException e)
-        {
-            System.out.println(e.getMessage());
-            throw new RuntimeException(e);
-        }
-    }
-
-    // Query Data
-    public Customer queryCustomerData(String id, ActiveShopSystem activeShopSystem)
-    {
-        Connection conn = getConnection();
-        if (conn == null) return null;
-
-        String query = "SELECT * FROM Customers WHERE Id = ?";
-        try (PreparedStatement preStatement = conn.prepareStatement(query))
-        {
-            preStatement.setString(1, id);
-            try (ResultSet data = preStatement.executeQuery(query))
-            {
-                String name = data.getString("Name");
-                String password = data.getString("Password");
-                int rankTypeInt = data.getInt("RankType");
-
-                RankType rankType = this.getRankTypeFromInt(rankTypeInt);
-                String rankTypeStr = getRankTypeStr(rankType);
-                System.out.println("Query Customer: " + id + " - " + name + " - " + password + " - " + rankTypeStr);
-
-                return new Customer(id, name, password, activeShopSystem, getRankTypeFromInt(rankTypeInt));
+                UserType userType = this.getUserTypeFromInt(userTypeInt);
+                return new User(id, name, password, activeShop, userType);
             }
         }
         catch (Exception e)
@@ -323,28 +146,29 @@ public class DataBase extends HuyUtil
     }
 
     // Query All
-    public List<Customer> queryAllCustomerData(ActiveShopSystem activeShopSystem)
+    public List<User> queryAllUserData(ActiveShop activeShop)
     {
-        String query = "SELECT * FROM Customers ";
-        Connection conn = getConnection();
+        Connection conn = this.getConnection();
         if (conn == null) return null;
 
-        try (Statement statement = conn.createStatement();
-             ResultSet data = statement.executeQuery(query);)
+        String query = "SELECT * FROM Users";
+        try (PreparedStatement preStatement = conn.prepareStatement(query);
+            ResultSet data = preStatement.executeQuery())
         {
-            List<Customer> customers = new ArrayList<>();
+            List<User> users = new ArrayList<>();
             while (data.next())
             {
                 String id = data.getString("Id");
                 String name = data.getString("Name");
                 String password = data.getString("Password");
-                int rankTypeInt = data.getInt("RankType");
+                int userTypeInt = data.getInt("UserType");
 
-                customers.add(new Customer(id, name, password, activeShopSystem, getRankTypeFromInt(rankTypeInt)));
+                UserType userType = this.getUserTypeFromInt(userTypeInt);
+                users.add(new User(id, name, password, activeShop, userType));
             }
 
-            System.out.println("Query All Customer");
-            return customers;
+            System.out.println("Query All Users Data");
+            return users;
         }
         catch (Exception e)
         {
@@ -354,34 +178,20 @@ public class DataBase extends HuyUtil
     }
 
     // Update
-    public void updateCustomerData(Customer customer)
+    public void updateUserData(User user)
     {
-        Connection conn = getConnection();
+        Connection conn = this.getConnection();
         if (conn == null) return;
 
-        String id = customer.getId();
-        String name = customer.getName();
-        String password = customer.getPassword();
-        RankType rankType = customer.getRankType();
-
-        String update = "UPDATE Customers SET"
-                + " Name = ?, "
-                + "Password = ?, "
-                + "RankType = ?, "
-                + "WHERE Id = ?";
-
+        String update = "UPDATE Users SET Name = ?, Password = ? WHERE Id = ?";
         try (PreparedStatement preStatement = conn.prepareStatement(update))
         {
-            // Update Data
-            preStatement.setString(1, name);
-            preStatement.setString(2, password);
-            preStatement.setInt(3, getIntFromRankType(rankType));
-
-            // Where id is
-            preStatement.setString(4, id);
+            preStatement.setString(1, user.getName());
+            preStatement.setString(2, user.getPassword());
+            preStatement.setString(3, user.getId());
             preStatement.executeUpdate();
 
-            System.out.println("Update Customer with id (" + id + "): " + name + " - " + password + " - " + getIntFromRankType(rankType));
+            System.out.println("Update User Data");
         }
         catch (Exception e)
         {
@@ -390,166 +200,17 @@ public class DataBase extends HuyUtil
         }
     }
 
-    // Delete Data
-    public void deleteCustomerData(String id)
+    // Delete
+    public void deleteUserData(String id)
     {
-        String delete = "Customers";
+        String delete = "DELETE FROM Users WHERE Id = ?";
         if (this.deleteData(id, delete))
         {
-            System.out.println("Delete Customer success");
+            System.out.println("Delete User Data Success");
             return;
         }
 
-        System.out.println("Delete Customer with id (" + id + ") failed");
-    }
-
-    //==========================================Manager===========================================
-    // Create Table
-    public void createManagerTable()
-    {
-        String createTable = "CREATE TABLE IF NOT EXISTS Managers"
-                + "("
-                + "Id TEXT UNIQUE PRIMARY KEY NOT NULL, "
-                + "Name TEXT NOT NULL, "
-                + "Password TEXT NOT NULL"
-                + ");";
-
-        if (this.createTable(createTable))
-        {
-            System.out.println("Create Managers Table Success");
-            return;
-        }
-
-        System.out.println("Create Managers Table Failed");
-    }
-
-    // Insert Data
-    public void insertManagerData(Manager manager)
-    {
-        Connection conn = getConnection();
-        if (conn == null) return;
-
-        String id = manager.getId();
-        String name = manager.getName();
-        String password = manager.getPassword();
-
-        String insertData = "INSERT INTO Managers (Id, Name, Password) VALUES (?, ?, ?)";
-        try (PreparedStatement preStatement = conn.prepareStatement(insertData))
-        {
-            preStatement.setString(1, id);
-            preStatement.setString(2, name);
-            preStatement.setString(3, password);
-            preStatement.executeUpdate();
-
-            System.out.println("Insert Manager data: " + id + " - " + name + " - " + password);
-        }
-        catch(Exception e)
-        {
-            System.out.println(e.getMessage());
-            throw new RuntimeException(e);
-        }
-    }
-
-    // Query Data
-    public Manager queryManagerData(String id, ActiveShopSystem activeShopSystem)
-    {
-        String query = "SELECT * FROM Managers WHERE Id = ?";
-        Connection conn = getConnection();
-        if (conn == null) return null;
-
-        try (PreparedStatement preStatement = conn.prepareStatement(query))
-        {
-            preStatement.setString(1, id);
-            try (ResultSet data = preStatement.executeQuery())
-            {
-                String name = data.getString("Name");
-                String password = data.getString("Password");
-
-                System.out.println("Query Manager: " + id + " - " + name + " - " + password);
-                return new Manager(id, name, password, activeShopSystem);
-            }
-        }
-        catch(Exception e)
-        {
-            System.out.println(e.getMessage());
-            throw new RuntimeException(e);
-        }
-    }
-
-    // Query All Data
-    public List<Manager> queryAllManagerData(ActiveShopSystem activeShopSystem)
-    {
-        String query = "SELECT * FROM Managers";
-        Connection conn = getConnection();
-        if (conn == null) return null;
-
-        try (Statement statement = conn.createStatement();
-             ResultSet data = statement.executeQuery(query);)
-        {
-            List<Manager> managers = new ArrayList<>();
-            while (data.next())
-            {
-                String id = data.getString("Id");
-                String name = data.getString("Name");
-                String password = data.getString("Password");
-
-                managers.add(new Manager(id, name, password, activeShopSystem));
-            }
-
-            System.out.println("Query All Managers");
-            return managers;
-        }
-        catch (Exception e)
-        {
-            System.out.println(e.getMessage());
-            throw new RuntimeException(e);
-        }
-    }
-
-    // Update
-    public void updateManagerData(Manager manager)
-    {
-        Connection conn = getConnection();
-        if (conn == null) return;
-
-        String id = manager.getId();
-        String name = manager.getName();
-        String password = manager.getPassword();
-
-        String update = "UPDATE Managers SET"
-                + "Name = ?, "
-                + "Password = ? "
-                + "WHERE Id = ?";
-
-        try (PreparedStatement preStatement = conn.prepareStatement(update))
-        {
-            // Update Data
-            preStatement.setString(1, name);
-            preStatement.setString(2, password);
-
-            // Where id is
-            preStatement.setString(3, id);
-            preStatement.executeUpdate();
-
-            System.out.println("Update Manager data: " + id + " - " + name + " - " + password);
-        }
-        catch (Exception e)
-        {
-            System.out.println(e.getMessage());
-            throw new RuntimeException(e);
-        }
-    }
-
-    public void deleteManagerData(String id)
-    {
-        String delete = "Managers";
-        if (this.deleteData(id, delete))
-        {
-            System.out.println("Delete Manager success");
-            return;
-        }
-
-        System.out.println("Delete Manager with id (" + id + ") failed");
+        System.out.println("Delete User Data Failed");
     }
 
     //======================================CustomerRequest=======================================
@@ -608,7 +269,7 @@ public class DataBase extends HuyUtil
     }
 
     // Query
-    public CustomerRequest queryCustomerRequestData(String id, ActiveShopSystem activeShopSystem)
+    public CustomerRequest queryCustomerRequestData(String id, ActiveShop activeShop)
     {
         Connection conn = getConnection();
         if (conn == null) return null;
@@ -624,7 +285,7 @@ public class DataBase extends HuyUtil
                 String itemAmounts_Json = data.getString("ItemAmounts_Json");
 
                 System.out.println("Query Customer Request Data");
-                return getCustomerRequestFromRawData(id, customerId, staffId, itemAmounts_Json, activeShopSystem);
+                return getCustomerRequestFromRawData(id, customerId, staffId, itemAmounts_Json, activeShop);
             }
         }
         catch (Exception e)
@@ -635,7 +296,7 @@ public class DataBase extends HuyUtil
     }
 
     // Query All
-    public List<CustomerRequest> queryAllCustomerRequestData(ActiveShopSystem activeShopSystem)
+    public List<CustomerRequest> queryAllCustomerRequestData(ActiveShop activeShop)
     {
         Connection conn = getConnection();
         if (conn == null) return null;
@@ -652,7 +313,7 @@ public class DataBase extends HuyUtil
                 String staffId = data.getString("StaffId");
                 String itemAmounts_Json = data.getString("ItemAmounts_Json");
 
-                customerRequests.add(this.getCustomerRequestFromRawData(id, customerId, staffId, itemAmounts_Json, activeShopSystem));
+                customerRequests.add(this.getCustomerRequestFromRawData(id, customerId, staffId, itemAmounts_Json, activeShop));
             }
             System.out.println("Query All CustomerRequests");
             return customerRequests;
@@ -715,21 +376,21 @@ public class DataBase extends HuyUtil
     }
 
     // Other
-    private CustomerRequest getCustomerRequestFromRawData(String id, String customerId, String staffId, String itemAmounts_Json, ActiveShopSystem activeShopSystem)
+    private CustomerRequest getCustomerRequestFromRawData(String id, String customerId, String staffId, String itemAmounts_Json, ActiveShop activeShop)
     {
         Gson gson = new Gson();
 
-        Staff staff = this.queryStaffData(staffId, activeShopSystem);
-        Customer customer = this.queryCustomerData(customerId, activeShopSystem);
+        User staff = this.queryUserData(staffId, activeShop);
+        User customer = this.queryUserData(customerId, activeShop);
 
         List<String> itemAmountIds = gson.fromJson(itemAmounts_Json, List.class);
-        List<ItemAmount> itemAmounts = new ArrayList<>();
+        List<OrderedItem> orderedItems = new ArrayList<>();
         for (String itemAmountId : itemAmountIds)
         {
-            itemAmounts.add(this.queryItemAmountData(itemAmountId));
+            orderedItems.add(this.queryOrderedItemData(itemAmountId));
         }
 
-        return new CustomerRequest(id, customer, staff, itemAmounts);
+        return new CustomerRequest(id, customer, staff, orderedItems);
     }
     //============================================Item============================================
     // Create Table
@@ -815,10 +476,10 @@ public class DataBase extends HuyUtil
                 String ItemAmounts_Json = data.getString("ItemAmounts_Json");
                 String description = data.getString("Description");
                 ItemType itemType = getItemTypeFromInt(itemTypeInt);
-                List<ItemAmount> itemAmounts = gson.fromJson(ItemAmounts_Json, List.class);
+                List<OrderedItem> orderedItems = gson.fromJson(ItemAmounts_Json, List.class);
 
                 System.out.println("Query Item Data");
-                return new Item(id, name, price, itemType, initAmount, itemAmounts, description);
+                return new Item(id, name, price, itemType, initAmount, orderedItems, description);
 
             }
         }
@@ -853,9 +514,9 @@ public class DataBase extends HuyUtil
                 String description = data.getString("Description");
 
                 ItemType itemType = getItemTypeFromInt(itemTypeInt);
-                List<ItemAmount> itemAmounts = gson.fromJson(ItemAmounts_Json, List.class);
+                List<OrderedItem> orderedItems = gson.fromJson(ItemAmounts_Json, List.class);
 
-                Item newItem = new Item(id, name, price, itemType, initAmount, itemAmounts, description);
+                Item newItem = new Item(id, name, price, itemType, initAmount, orderedItems, description);
                 items.add(newItem);
             }
 
@@ -926,11 +587,11 @@ public class DataBase extends HuyUtil
         System.out.println("Delete Item with id (" + id + ") failed");
     }
 
-    //=========================================ItemAmount=========================================
+    //=========================================OrderedItem=========================================
     // Create Table
-    public void createItemAmountTable()
+    public void createOrderedItemTable()
     {
-        String create = "CREATE TABLE ItemAmounts"
+        String create = "CREATE TABLE OrderedItems"
                 + "("
                 + "Id TEXT UNIQUE PRIMARY KEY NOT NULL, "
                 + "ItemId TEXT NOT NULL, "
@@ -940,29 +601,29 @@ public class DataBase extends HuyUtil
 
         if (this.createTable(create))
         {
-            System.out.println("Create ItemAmounts Table Success");
+            System.out.println("Create OrderedItems Table Success");
             return;
         }
 
-        System.out.println("Create ItemAmounts Table Failed");
+        System.out.println("Create OrderedItems Table Failed");
     }
 
     // Insert
-    public void insertItemAmountData(ItemAmount itemAmount)
+    public void insertOrderedItemData(OrderedItem orderedItem)
     {
         Connection conn = getConnection();
         if (conn == null) return;
 
-        String insert = "INSERT INTO ItemAmounts (Id, ItemId, Amount, IsSold) VALUES (?, ?, ?, ?)";
+        String insert = "INSERT INTO OrderedItems (Id, ItemId, Amount, IsSold) VALUES (?, ?, ?, ?)";
         try (PreparedStatement preStatement = conn.prepareStatement(insert))
         {
-            preStatement.setString(1, itemAmount.getId());
-            preStatement.setString(2, itemAmount.getItem().getId());
-            preStatement.setInt(3, itemAmount.getAmount());
-            preStatement.setBoolean(4, itemAmount.getIsSold());
+            preStatement.setString(1, orderedItem.getId());
+            preStatement.setString(2, orderedItem.getItem().getId());
+            preStatement.setInt(3, orderedItem.getAmount());
+            preStatement.setBoolean(4, orderedItem.getIsSold());
             preStatement.executeUpdate();
 
-            System.out.println("Insert Item Amounts Data");
+            System.out.println("Insert OrderedItems Data");
         }
         catch (Exception e)
         {
@@ -972,12 +633,12 @@ public class DataBase extends HuyUtil
     }
 
     // Query
-    public ItemAmount queryItemAmountData(String id)
+    public OrderedItem queryOrderedItemData(String id)
     {
         Connection conn = getConnection();
         if (conn == null) return null;
 
-        String query = "SELECT * FROM ItemAmounts WHERE Id = ?";
+        String query = "SELECT * FROM OrderedItems WHERE Id = ?";
         try (PreparedStatement preStatement = conn.prepareStatement(query))
         {
             preStatement.setString(1, id);
@@ -989,8 +650,8 @@ public class DataBase extends HuyUtil
 
                 Item item = this.queryItemData(itemId);
 
-                System.out.println("Query Item Amount Data");
-                return new ItemAmount(id, item, amount, isSold);
+                System.out.println("Query OrderedItems Data");
+                return new OrderedItem(id, item, amount, isSold);
             }
         }
         catch (Exception e)
@@ -1000,17 +661,17 @@ public class DataBase extends HuyUtil
         }
     }
 
-    public List<ItemAmount> queryAllItemAmountData()
+    public List<OrderedItem> queryAllOrderedItemData()
     {
         Connection conn = getConnection();
         if (conn == null) return null;
 
-        String query = "SELECT * FROM ItemAmounts";
+        String query = "SELECT * FROM OrderedItems";
 
         try(PreparedStatement preStatement = conn.prepareStatement(query);
             ResultSet data = preStatement.executeQuery())
         {
-            List<ItemAmount> itemAmounts = new ArrayList<>();
+            List<OrderedItem> orderedItems = new ArrayList<>();
             while (data.next())
             {
                 String id = data.getString("Id");
@@ -1019,11 +680,11 @@ public class DataBase extends HuyUtil
                 boolean isSold = data.getBoolean("IsSold");
 
                 Item item = this.queryItemData(itemId);
-                itemAmounts.add(new ItemAmount(id, item, amount, isSold));
+                orderedItems.add(new OrderedItem(id, item, amount, isSold));
             }
 
-            System.out.println("Query All ItemAmounts");
-            return itemAmounts;
+            System.out.println("Query All OrderedItems");
+            return orderedItems;
         }
         catch (Exception e)
         {
@@ -1033,12 +694,12 @@ public class DataBase extends HuyUtil
     }
 
     // Update
-    public void updateItemAmountData(ItemAmount itemAmount)
+    public void updateOrderedItemData(OrderedItem orderedItem)
     {
         Connection conn = getConnection();
         if (conn == null) return;
 
-        String update = "UPDATE ItemAmounts SET "
+        String update = "UPDATE OrderedItems SET "
                 + "ItemId = ?, "
                 + "Amount = ?, "
                 + "IsSold = ? "
@@ -1046,13 +707,13 @@ public class DataBase extends HuyUtil
 
         try (PreparedStatement preStatement = conn.prepareStatement(update))
         {
-            preStatement.setString(1, itemAmount.getItem().getId());
-            preStatement.setInt(2, itemAmount.getAmount());
-            preStatement.setBoolean(3, itemAmount.getIsSold());
-            preStatement.setString(4, itemAmount.getId());
+            preStatement.setString(1, orderedItem.getItem().getId());
+            preStatement.setInt(2, orderedItem.getAmount());
+            preStatement.setBoolean(3, orderedItem.getIsSold());
+            preStatement.setString(4, orderedItem.getId());
             preStatement.executeUpdate();
 
-            System.out.println("Update Item Amounts Data");
+            System.out.println("Update OrderedItems Data");
         }
         catch (Exception e)
         {
@@ -1062,20 +723,20 @@ public class DataBase extends HuyUtil
     }
 
     // Delete
-    public void deleteItemAmountData(String id)
+    public void deleteOrderedItemData(String id)
     {
-        String delete = "DELETE FROM ItemAmounts WHERE Id = ?";
+        String delete = "DELETE FROM OrderedItems WHERE Id = ?";
 
         if (this.deleteData(id, delete))
         {
-            System.out.println("Delete ItemAmounts Success");
+            System.out.println("Delete OrderedItems Success");
             return;
         }
 
-        System.out.println("Delete ItemAmounts with id (" + id + ") failed");
+        System.out.println("Delete OrderedItems with id (" + id + ") failed");
     }
 
-    //=========================================ShopSystem=========================================
+    //============================================Shop============================================
     // Create Table
     public void createShopTable() {
         String createTable = "CREATE TABLE IF NOT EXISTS Shops "
@@ -1096,7 +757,7 @@ public class DataBase extends HuyUtil
     }
 
     // Insert Data
-    public void insertShopData(ShopSystem shop)
+    public void insertShopData(Shop shop)
     {
         Connection conn = getConnection();
         if (conn == null) return;
@@ -1125,7 +786,7 @@ public class DataBase extends HuyUtil
     }
 
     // Query Data
-    public ShopSystem queryShopData(String id)
+    public Shop queryShopData(String id)
     {
         Connection conn = getConnection();
         if (conn == null) return null;
@@ -1141,7 +802,7 @@ public class DataBase extends HuyUtil
                 String systemCode = data.getString("SystemCode");
 
                 System.out.println("Query Shop data: " + id + " - " + name + " - " + password + " - " + systemCode);
-                return new ShopSystem(id, name, password, systemCode);
+                return new Shop(id, name, password, systemCode);
             }
         }
         catch (Exception e)
@@ -1152,7 +813,7 @@ public class DataBase extends HuyUtil
     }
 
     // Query All Data
-    public List<ShopSystem> queryAllShopData()
+    public List<Shop> queryAllShopData()
     {
         String query = "SELECT * FROM Shops";
         Connection conn = getConnection();
@@ -1161,7 +822,7 @@ public class DataBase extends HuyUtil
         try (Statement statement = conn.createStatement();
              ResultSet data = statement.executeQuery(query);)
         {
-            List<ShopSystem> shopSystems = new ArrayList<>();
+            List<Shop> shops = new ArrayList<>();
             while (data.next())
             {
                 String id = data.getString("Id");
@@ -1169,11 +830,11 @@ public class DataBase extends HuyUtil
                 String password = data.getString("Password");
                 String systemCode = data.getString("SystemCode");
 
-                shopSystems.add(new ShopSystem(id, name, password, systemCode));
+                shops.add(new Shop(id, name, password, systemCode));
             }
 
             System.out.println("Query All Shops");
-            return shopSystems;
+            return shops;
         }
         catch (Exception e)
         {
@@ -1183,7 +844,7 @@ public class DataBase extends HuyUtil
     }
 
     // Update Data
-    public void updateShopData(ShopSystem shop)
+    public void updateShopData(Shop shop)
     {
         Connection conn = getConnection();
         if (conn == null) return;
@@ -1228,7 +889,7 @@ public class DataBase extends HuyUtil
         System.out.println("Delete Shop with id (" + id + ") failed");
     }
 
-    //======================================ActiveShopSystem======================================
+    //=========================================ActiveShop=========================================
     // Create Table
     public void createActiveShopTable()
     {
@@ -1249,7 +910,7 @@ public class DataBase extends HuyUtil
     }
 
     // Insert
-    public void insertActiveShopData(ActiveShopSystem activeShop)
+    public void insertActiveShopData(ActiveShop activeShop)
     {
         Connection conn = getConnection();
         if (conn == null) return;
@@ -1273,7 +934,7 @@ public class DataBase extends HuyUtil
     }
 
     // Query
-    public ActiveShopSystem queryActiveShopData(String id)
+    public ActiveShop queryActiveShopData(String id)
     {
         Connection conn = getConnection();
         if (conn == null) return null;
@@ -1299,7 +960,7 @@ public class DataBase extends HuyUtil
     }
 
     // Query All
-    public List<ActiveShopSystem> queryAllActiveShopData()
+    public List<ActiveShop> queryAllActiveShopData()
     {
         Connection conn = getConnection();
         if (conn == null) return null;
@@ -1308,7 +969,7 @@ public class DataBase extends HuyUtil
         try (PreparedStatement preStatement = conn.prepareStatement(query);
             ResultSet data = preStatement.executeQuery())
         {
-            List<ActiveShopSystem> activeShops = new ArrayList<>();
+            List<ActiveShop> activeShops = new ArrayList<>();
             while (data.next())
             {
                 String id = data.getString("Id");
@@ -1329,7 +990,7 @@ public class DataBase extends HuyUtil
     }
 
     // Update
-    public void updateActiveShopData(ActiveShopSystem activeShop)
+    public void updateActiveShopData(ActiveShop activeShop)
     {
         Connection conn = getConnection();
         if (conn == null) return;
@@ -1367,15 +1028,17 @@ public class DataBase extends HuyUtil
     }
 
     // Other
-    private ActiveShopSystemRawData getRawDataFromActiveShop(ActiveShopSystem activeShop)
+    private ActiveShopSystemRawData getRawDataFromActiveShop(ActiveShop activeShop)
     {
         String id = activeShop.getId();
-        String shopId = activeShop.getShopSystem().getId();
+        String shopId = activeShop.getShop().getId();
+
+        List<String> customerRequestIds = activeShop.getCustomerRequestIds();
+        List<String> activeUserIds = activeShop.getActiveUserIds();
+
         HashMap<String, List<String>> dataMap = new HashMap<>();
-        dataMap.put("activeManagerIds", activeShop.getActiveMangerIds());
-        dataMap.put("activeStaffIds", activeShop.getActiveStaffIds());
-        dataMap.put("activeCustomerIds", activeShop.getActiveCustomerIds());
-        dataMap.put("customerRequestIds", activeShop.getCustomerRequestIds());
+        dataMap.put("CustomerRequestIds", customerRequestIds);
+        dataMap.put("ActiveUserIds", activeUserIds);
 
         Gson gson = new Gson();
         String json = gson.toJson(dataMap);
@@ -1383,45 +1046,30 @@ public class DataBase extends HuyUtil
         return new ActiveShopSystemRawData(id, shopId, json);
     }
 
-    private ActiveShopSystem getActiveShopFromRawData(String id, String shopId, String json)
+    private ActiveShop getActiveShopFromRawData(String id, String shopId, String json)
     {
         Gson gson = new Gson();
-        ActiveShopSystem activeShop = new ActiveShopSystem();
+        ActiveShop activeShop = new ActiveShop();
 
-        ShopSystem shop = this.queryShopData(shopId);
+        Shop shop = this.queryShopData(shopId);
 
         HashMap<String, List<String>> dataMap = gson.fromJson(json, HashMap.class);
-        List<String> activeManagerIds = dataMap.get("activeManagerIds");
-        List<String> activeStaffIds = dataMap.get("activeStaffIds");
-        List<String> activeCustomerIds = dataMap.get("activeCustomerIds");
-        List<String> customerRequestIds = dataMap.get("customerRequestIds");
+        List<String> customerRequestIds = dataMap.get("CustomerRequestIds");
+        List<String> activeUserIds = dataMap.get("ActiveUserIds");
 
-        List<Manager> activeManagers = new ArrayList<>();
-        List<Staff> activeStaffs = new ArrayList<>();
-        List<Customer> activeCustomers = new ArrayList<>();
         List<CustomerRequest> customerRequests = new ArrayList<>();
-
-        for (String activeManagerId : activeManagerIds)
-        {
-            activeManagers.add(this.queryManagerData(activeManagerId, activeShop));
-        }
-
-        for (String activeStaffId : activeStaffIds)
-        {
-            activeStaffs.add(this.queryStaffData(activeStaffId, activeShop));
-        }
-
-        for (String activeCustomerId : activeCustomerIds)
-        {
-            activeCustomers.add(this.queryCustomerData(activeCustomerId, activeShop));
-        }
-
         for (String customerRequestId : customerRequestIds)
         {
             customerRequests.add(this.queryCustomerRequestData(customerRequestId, activeShop));
         }
 
-        ActiveShopSystem activeShopSystem = new ActiveShopSystem(id, shop, activeManagers, activeStaffs, activeCustomers, customerRequests, this);
+        List<User> activeUsers = new ArrayList<>();
+        for (String userid : activeUserIds)
+        {
+            activeUsers.add(this.queryUserData(userid, activeShop));
+        }
+
+        activeShop = new ActiveShop(id, shop, customerRequests, activeUsers, this);
         return activeShop;
     }
 

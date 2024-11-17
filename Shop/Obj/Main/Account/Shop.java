@@ -1,18 +1,18 @@
 package Obj.Main.Account;
 
-public class ShopSystem extends BaseAccount
+public class Shop extends BaseAccount
 {
     //==========================================Variable==========================================
     private String systemCode;
 
     //========================================Constructor=========================================
-    public ShopSystem()
+    public Shop()
     {
         super();
         this.systemCode = "";
     }
 
-    public ShopSystem(String id, String name, String password, String systemCode)
+    public Shop(String id, String name, String password, String systemCode)
     {
         super(id, name, password);
         this.systemCode = systemCode;

@@ -3,6 +3,7 @@ package HuySystem;
 import Obj.ItemStateType;
 import Obj.ItemType;
 import Obj.RankType;
+import Obj.UserType;
 
 import java.util.Scanner;
 
@@ -54,6 +55,7 @@ public abstract class HuyUtil
     }
 
     //==========================================Convert===========================================
+    // RankType
     protected RankType getRankTypeFromInt(int value)
     {
         if (value == 1) return RankType.Bronze;
@@ -81,6 +83,7 @@ public abstract class HuyUtil
         else return "No RankType";
     }
 
+    // ItemType
     protected ItemType getItemTypeFromInt(int value)
     {
         if (value == 1) return ItemType.Food;
@@ -97,17 +100,28 @@ public abstract class HuyUtil
         else return 0;
     }
 
-    protected ItemStateType getItemStateTypeFromInt(int value)
+    // UserType
+    protected int getIntFromUserType(UserType userType)
     {
-        if (value == 1) return ItemStateType.UnSold;
-        else if (value == 2) return ItemStateType.Sold;
+        if (userType == UserType.Manager) return 1;
+        else if (userType == UserType.Staff) return 2;
+        else if (userType == UserType.Customer) return 3;
+        else return 0;
+    }
+
+    protected UserType getUserTypeFromInt(int value)
+    {
+        if (value == 1) return UserType.Manager;
+        else if (value == 2) return UserType.Staff;
+        else if (value == 3) return UserType.Customer;
         else return null;
     }
 
-    protected int getIntFromItemStateType(ItemStateType itemStateType)
+    protected String getStrFromUserType(UserType userType)
     {
-        if (itemStateType == ItemStateType.UnSold) return 1;
-        else if (itemStateType == ItemStateType.Sold) return 2;
-        else return 0;
+        if (userType == UserType.Manager) return "Manager";
+        else if (userType == UserType.Staff) return "Staff";
+        else if (userType == UserType.Customer) return "Customer";
+        else return "No Type";
     }
 }
