@@ -16,15 +16,27 @@ import Obj.Side.CustomerRequest;
 import Obj.Side.OrderedItem;
 import com.google.gson.Gson;
 
-public class DataBase extends HuyUtil
+public class DataBaseCtrl extends HuyUtil
 {
+
+    public DataBaseCtrl()
+    {
+        this.createActiveShopTable();
+        this.createShopTable();
+        this.createUserTable();
+        this.createItemTable();
+        this.createCustomerRequestTable();
+        this.createOrderedItemTable();
+    }
+
     //===========================================Other============================================
     // Connection
     private Connection getConnection()
     {
-        String dataBaseUrl = "jdbc:sqlite:./DataBase/Shop.db";
-        try (Connection conn = DriverManager.getConnection(dataBaseUrl))
+        String dataBaseUrl = "jdbc:sqlite:./DataBaseCtrl/ShopDataBase.db";
+        try
         {
+            Connection conn = DriverManager.getConnection(dataBaseUrl);
             if (conn == null)
             {
                 System.out.println("Connection is null");
@@ -84,6 +96,7 @@ public class DataBase extends HuyUtil
         String create = "CREATE TABLE IF NOT EXISTS Users"
                 + "("
                 + "Id TEXT UNIQUE PRIMARY KEY NOT NULL, "
+                + "ShopId TEXT NOT NULL, "
                 + "Name TEXT NOT NULL, "
                 + "Password TEXT NOT NULL, "
                 + "UserType INTEGER NOT NULL"
@@ -104,13 +117,14 @@ public class DataBase extends HuyUtil
         Connection conn = this.getConnection();
         if (conn == null) return;
 
-        String insert = "INSERT INTO Users (Id, Name, Password, UserType) VALUES (?, ?, ?, ?)";
+        String insert = "INSERT INTO Users (Id, ShopId, Name, Password, UserType) VALUES (?, ?, ?, ?, ?)";
         try (PreparedStatement preStatement = conn.prepareStatement(insert))
         {
             preStatement.setString(1, user.getId());
-            preStatement.setString(2, user.getName());
-            preStatement.setString(3, user.getPassword());
-            preStatement.setInt(4, this.getIntFromUserType(user.getUserType()));
+            preStatement.setString(2, user.getShop().getId());
+            preStatement.setString(3, user.getName());
+            preStatement.setString(4, user.getPassword());
+            preStatement.setInt(5, this.getIntFromUserType(user.getUserType()));
             preStatement.executeUpdate();
 
             System.out.println("Insert User Data");
@@ -123,7 +137,7 @@ public class DataBase extends HuyUtil
     }
 
     // Query
-    public User queryUserData(String id, Shop shop)
+    public User queryUserData(String id)
     {
         Connection conn = this.getConnection();
         if (conn == null) return null;
@@ -135,9 +149,11 @@ public class DataBase extends HuyUtil
             try (ResultSet data = preStatement.executeQuery())
             {
                 String name = data.getString("Name");
+                String shopId = data.getString("ShopId");
                 String password = data.getString("Password");
                 int userTypeInt = data.getInt("UserType");
 
+                Shop shop = this.queryShopData(shopId);
                 UserType userType = this.getUserTypeFromInt(userTypeInt);
                 return new User(id, name, password, shop, userType);
             }
@@ -150,7 +166,7 @@ public class DataBase extends HuyUtil
     }
 
     // Query All
-    public List<User> queryAllUserData(Shop shop)
+    public List<User> queryAllUserData()
     {
         Connection conn = this.getConnection();
         if (conn == null) return null;
@@ -163,10 +179,12 @@ public class DataBase extends HuyUtil
             while (data.next())
             {
                 String id = data.getString("Id");
+                String shopId = data.getString("ShopId");
                 String name = data.getString("Name");
                 String password = data.getString("Password");
                 int userTypeInt = data.getInt("UserType");
 
+                Shop shop = this.queryShopData(shopId);
                 UserType userType = this.getUserTypeFromInt(userTypeInt);
                 users.add(new User(id, name, password, shop, userType));
             }
@@ -224,6 +242,7 @@ public class DataBase extends HuyUtil
         String create = "CREATE TABLE IF NOT EXISTS CustomerRequests"
                 + "("
                 + "Id TEXT UNIQUE PRIMARY KEY NOT NULL, "
+                + "ShopId TEXT NOT NULL, "
                 + "CustomerId TEXT NOT NULL, "
                 + "StaffId TEXT NOT NULL, "
                 + "ItemAmounts_Json TEXT NOT NULL"
@@ -247,20 +266,22 @@ public class DataBase extends HuyUtil
         Gson gson = new Gson();
 
         String id = customerRequest.getId();
+        String shopId = customerRequest.getShop().getId();
         String staffId = customerRequest.getHandledStaff().getId();
         String customerId = customerRequest.getRequestedCustomer().getId();
         String json = gson.toJson(customerRequest.getRequestedItemAmounts());
 
         String insert = "INSERT INTO CustomerRequests "
-                + "(Id, CustomerId,StaffId, ItemAmounts_Json) "
-                + "VALUES (?, ?, ?, ?)";
+                + "(Id, ShopId, CustomerId, StaffId, ItemAmounts_Json) "
+                + "VALUES (?, ?, ?, ?, ?)";
 
         try (PreparedStatement preStatement = conn.prepareStatement(insert))
         {
             preStatement.setString(1, id);
-            preStatement.setString(2, staffId);
-            preStatement.setString(3, customerId);
-            preStatement.setString(4, json);
+            preStatement.setString(2, shopId);
+            preStatement.setString(3, staffId);
+            preStatement.setString(4, customerId);
+            preStatement.setString(5, json);
             preStatement.executeUpdate();
 
             System.out.println("Insert CustomerRequest Data");
@@ -273,7 +294,7 @@ public class DataBase extends HuyUtil
     }
 
     // Query
-    public CustomerRequest queryCustomerRequestData(String id, Shop shop)
+    public CustomerRequest queryCustomerRequestData(String id)
     {
         Connection conn = getConnection();
         if (conn == null) return null;
@@ -284,12 +305,13 @@ public class DataBase extends HuyUtil
             preStatement.setString(1, id);
             try (ResultSet data = preStatement.executeQuery())
             {
+                String shopId = data.getString("ShopId");
                 String customerId = data.getString("CustomerId");
                 String staffId = data.getString("StaffId");
                 String itemAmounts_Json = data.getString("ItemAmounts_Json");
 
                 System.out.println("Query Customer Request Data");
-                return getCustomerRequestFromRawData(id, customerId, staffId, itemAmounts_Json, shop);
+                return getCustomerRequestFromRawData(id, shopId, customerId, staffId, itemAmounts_Json);
             }
         }
         catch (Exception e)
@@ -300,7 +322,7 @@ public class DataBase extends HuyUtil
     }
 
     // Query All
-    public List<CustomerRequest> queryAllCustomerRequestData(Shop shop)
+    public List<CustomerRequest> queryAllCustomerRequestData()
     {
         Connection conn = getConnection();
         if (conn == null) return null;
@@ -313,11 +335,12 @@ public class DataBase extends HuyUtil
             while (data.next())
             {
                 String id = data.getString("Id");
+                String shopId = data.getString("ShopId");
                 String customerId = data.getString("CustomerId");
                 String staffId = data.getString("StaffId");
                 String itemAmounts_Json = data.getString("ItemAmounts_Json");
 
-                customerRequests.add(this.getCustomerRequestFromRawData(id, customerId, staffId, itemAmounts_Json, shop));
+                customerRequests.add(this.getCustomerRequestFromRawData(id, shopId, customerId, staffId, itemAmounts_Json));
             }
             System.out.println("Query All CustomerRequests");
             return customerRequests;
@@ -338,6 +361,7 @@ public class DataBase extends HuyUtil
         Gson gson = new Gson();
 
         String id = customerRequest.getId();
+        String shopId = customerRequest.getShop().getId();
         String customerId = customerRequest.getRequestedCustomer().getId();
         String staffId = customerRequest.getHandledStaff().getId();
         String itemAmounts_Json = gson.toJson(customerRequest.getRequestedItemAmounts());
@@ -380,18 +404,19 @@ public class DataBase extends HuyUtil
     }
 
     // Other
-    private CustomerRequest getCustomerRequestFromRawData(String id, String customerId, String staffId, String itemAmounts_Json, Shop shop)
+    private CustomerRequest getCustomerRequestFromRawData(String id, String shopId, String customerId, String staffId, String itemAmounts_Json)
     {
         Gson gson = new Gson();
 
-        User staff = this.queryUserData(staffId, shop);
-        User customer = this.queryUserData(customerId, shop);
+        Shop shop = this.queryShopData(shopId);
+        User staff = this.queryUserData(staffId);
+        User customer = this.queryUserData(customerId);
 
         List<String> itemAmountIds = gson.fromJson(itemAmounts_Json, List.class);
         List<OrderedItem> orderedItems = new ArrayList<>();
         for (String itemAmountId : itemAmountIds)
         {
-            orderedItems.add(this.queryOrderedItemData(itemAmountId, shop));
+            orderedItems.add(this.queryOrderedItemData(itemAmountId));
         }
 
         return new CustomerRequest(id, shop, customer, staff, orderedItems);
@@ -403,6 +428,7 @@ public class DataBase extends HuyUtil
         String create = "CREATE TABLE IF NOT EXISTS Items"
                 + "("
                 + "Id TEXT UNIQUE PRIMARY KEY NOT NULL, "
+                + "ShopId TEXT NOT NULL, "
                 + "Name TEXT NOT NULL, "
                 + "Price FLOAT NOT NULL, "
                 + "ItemType INTEGER NOT NULL, "
@@ -427,6 +453,7 @@ public class DataBase extends HuyUtil
         if (conn == null) return;
 
         String id = item.getId();
+        String shopId = item.getShop().getId();
         String name = item.getName();
         float price = item.getPrice();
         int itemTypeInt = getIntFromItemType(item.getItemType());
@@ -437,18 +464,20 @@ public class DataBase extends HuyUtil
 
         String description = item.getDescription();
 
-        String insert = "INSERT INTO Items (Id, Name, Price, ItemType, ItemAmounts_Json, Description) "
-                + "VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String insert = "INSERT INTO Items "
+                + "(Id, ShopId, Name, Price, ItemType, InitAmount, ItemAmounts_Json, Description) "
+                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (PreparedStatement preStatement = conn.prepareStatement(insert))
         {
             preStatement.setString(1, id);
-            preStatement.setString(2, name);
-            preStatement.setFloat(3, price);
-            preStatement.setInt(4, itemTypeInt);
-            preStatement.setInt(5, initAmount);
-            preStatement.setString(6, ItemAmounts_Json);
-            preStatement.setString(7, description);
+            preStatement.setString(2, shopId);
+            preStatement.setString(3, name);
+            preStatement.setFloat(4, price);
+            preStatement.setInt(5, itemTypeInt);
+            preStatement.setInt(6, initAmount);
+            preStatement.setString(7, ItemAmounts_Json);
+            preStatement.setString(8, description);
             preStatement.executeUpdate();
 
             System.out.println("Insert Item Data");
@@ -461,7 +490,7 @@ public class DataBase extends HuyUtil
     }
 
     // Query
-    public Item queryItemData(String id, Shop shop)
+    public Item queryItemData(String id)
     {
         Connection conn = getConnection();
         if (conn == null) return null;
@@ -473,12 +502,15 @@ public class DataBase extends HuyUtil
             preStatement.setString(1, id);
             try (ResultSet data = preStatement.executeQuery())
             {
+                String shopId = data.getString("ShopId");
                 String name = data.getString("Name");
                 float price = data.getFloat("Price");
                 int itemTypeInt = data.getInt("ItemType");
-                int initAmount = data.getInt("ItemAmounts");
+                int initAmount = data.getInt("InitAmount");
                 String ItemAmounts_Json = data.getString("ItemAmounts_Json");
                 String description = data.getString("Description");
+
+                Shop shop = this.queryShopData(shopId);
                 ItemType itemType = getItemTypeFromInt(itemTypeInt);
                 List<OrderedItem> orderedItems = gson.fromJson(ItemAmounts_Json, List.class);
 
@@ -495,7 +527,7 @@ public class DataBase extends HuyUtil
     }
 
     // Query All
-    public List<Item> queryAllItemData(Shop shop)
+    public List<Item> queryAllItemData()
     {
         Connection conn = getConnection();
         if (conn == null) return null;
@@ -510,13 +542,15 @@ public class DataBase extends HuyUtil
             while (data.next())
             {
                 String id = data.getString("Id");
+                String shopId = data.getString("ShopId");
                 String name = data.getString("Name");
                 float price = data.getFloat("Price");
                 int itemTypeInt = data.getInt("ItemType");
-                int initAmount = data.getInt("ItemAmounts");
+                int initAmount = data.getInt("InitAmount");
                 String ItemAmounts_Json = data.getString("ItemAmounts_Json");
                 String description = data.getString("Description");
 
+                Shop shop = this.queryShopData(shopId);
                 ItemType itemType = getItemTypeFromInt(itemTypeInt);
                 List<OrderedItem> orderedItems = gson.fromJson(ItemAmounts_Json, List.class);
 
@@ -554,6 +588,7 @@ public class DataBase extends HuyUtil
                 + "Name = ?, "
                 + "Price = ?, "
                 + "ItemType = ?, "
+                + "InitAmount = ?"
                 + "ItemAmounts_Json = ?, "
                 + "Description = ? "
                 + "WHERE Id = ?";
@@ -595,9 +630,10 @@ public class DataBase extends HuyUtil
     // Create Table
     public void createOrderedItemTable()
     {
-        String create = "CREATE TABLE OrderedItems"
+        String create = "CREATE TABLE IF NOT EXISTS OrderedItems"
                 + "("
                 + "Id TEXT UNIQUE PRIMARY KEY NOT NULL, "
+                + "ShopId TEXT NOT NULL, "
                 + "ItemId TEXT NOT NULL, "
                 + "Amount INTEGER NOT NULL, "
                 + "IsSold BOOLEAN NOT NULL"
@@ -618,13 +654,15 @@ public class DataBase extends HuyUtil
         Connection conn = getConnection();
         if (conn == null) return;
 
-        String insert = "INSERT INTO OrderedItems (Id, ItemId, Amount, IsSold) VALUES (?, ?, ?, ?)";
+        String insert = "INSERT INTO OrderedItems "
+                + "(Id, ShopId, ItemId, Amount, IsSold) VALUES (?, ?, ?, ?, ?)";
         try (PreparedStatement preStatement = conn.prepareStatement(insert))
         {
             preStatement.setString(1, orderedItem.getId());
-            preStatement.setString(2, orderedItem.getItem().getId());
-            preStatement.setInt(3, orderedItem.getAmount());
-            preStatement.setBoolean(4, orderedItem.getIsSold());
+            preStatement.setString(2, orderedItem.getShop().getId());
+            preStatement.setString(3, orderedItem.getItem().getId());
+            preStatement.setInt(4, orderedItem.getAmount());
+            preStatement.setBoolean(5, orderedItem.getIsSold());
             preStatement.executeUpdate();
 
             System.out.println("Insert OrderedItems Data");
@@ -637,7 +675,7 @@ public class DataBase extends HuyUtil
     }
 
     // Query
-    public OrderedItem queryOrderedItemData(String id, Shop shop)
+    public OrderedItem queryOrderedItemData(String id)
     {
         Connection conn = getConnection();
         if (conn == null) return null;
@@ -648,11 +686,13 @@ public class DataBase extends HuyUtil
             preStatement.setString(1, id);
             try (ResultSet data = preStatement.executeQuery())
             {
+                String shopId = data.getString("ShopId");
                 String itemId = data.getString("ItemId");
                 int amount = data.getInt("Amount");
                 boolean isSold = data.getBoolean("IsSold");
 
-                Item item = this.queryItemData(itemId, shop);
+                Shop shop = this.queryShopData(shopId);
+                Item item = this.queryItemData(itemId);
 
                 System.out.println("Query OrderedItems Data");
                 return new OrderedItem(id, shop, item, amount, isSold);
@@ -665,7 +705,7 @@ public class DataBase extends HuyUtil
         }
     }
 
-    public List<OrderedItem> queryAllOrderedItemData(Shop shop)
+    public List<OrderedItem> queryAllOrderedItemData()
     {
         Connection conn = getConnection();
         if (conn == null) return null;
@@ -679,11 +719,13 @@ public class DataBase extends HuyUtil
             while (data.next())
             {
                 String id = data.getString("Id");
+                String shopId = data.getString("ShopId");
                 String itemId = data.getString("ItemId");
                 int amount = data.getInt("Amount");
                 boolean isSold = data.getBoolean("IsSold");
 
-                Item item = this.queryItemData(itemId, shop);
+                Shop shop = this.queryShopData(shopId);
+                Item item = this.queryItemData(itemId);
                 orderedItems.add(new OrderedItem(id, shop, item, amount, isSold));
             }
 
@@ -806,7 +848,7 @@ public class DataBase extends HuyUtil
                 String systemCode = data.getString("SystemCode");
 
                 System.out.println("Query Shop data: " + id + " - " + name + " - " + password + " - " + systemCode);
-                return new Shop(id, name, password, systemCode);
+                return new Shop(id, name, password, systemCode, this);
             }
         }
         catch (Exception e)
@@ -834,7 +876,7 @@ public class DataBase extends HuyUtil
                 String password = data.getString("Password");
                 String systemCode = data.getString("SystemCode");
 
-                shops.add(new Shop(id, name, password, systemCode));
+                shops.add(new Shop(id, name, password, systemCode, this));
             }
 
             System.out.println("Query All Shops");
@@ -919,7 +961,7 @@ public class DataBase extends HuyUtil
         Connection conn = getConnection();
         if (conn == null) return;
 
-        ActiveShopSystemRawData rawData = this.getRawDataFromActiveShop(activeShop);
+        ActiveShopRawData rawData = this.getRawDataFromActiveShop(activeShop);
         String insert = "INSERT INTO ActiveShops (Id, ShopId, Json) VALUES (?, ?, ?)";
         try (PreparedStatement preStatement = conn.prepareStatement(insert))
         {
@@ -999,7 +1041,7 @@ public class DataBase extends HuyUtil
         Connection conn = getConnection();
         if (conn == null) return;
 
-        ActiveShopSystemRawData rawData = getRawDataFromActiveShop(activeShop);
+        ActiveShopRawData rawData = getRawDataFromActiveShop(activeShop);
 
         String update = "UPDATE ActiveShops SET ShopId = ?, Json = ? WHERE Id = ?";
         try (PreparedStatement preStatement = conn.prepareStatement(update))
@@ -1032,7 +1074,7 @@ public class DataBase extends HuyUtil
     }
 
     // Other
-    private ActiveShopSystemRawData getRawDataFromActiveShop(ActiveShop activeShop)
+    private ActiveShopRawData getRawDataFromActiveShop(ActiveShop activeShop)
     {
         String id = activeShop.getId();
         String shopId = activeShop.getShop().getId();
@@ -1047,7 +1089,7 @@ public class DataBase extends HuyUtil
         Gson gson = new Gson();
         String json = gson.toJson(dataMap);
 
-        return new ActiveShopSystemRawData(id, shopId, json);
+        return new ActiveShopRawData(id, shopId, json);
     }
 
     private ActiveShop getActiveShopFromRawData(String id, String shopId, String json)
@@ -1056,7 +1098,6 @@ public class DataBase extends HuyUtil
         ActiveShop activeShop = new ActiveShop();
 
         Shop shop = this.queryShopData(shopId);
-
         HashMap<String, List<String>> dataMap = gson.fromJson(json, HashMap.class);
         List<String> customerRequestIds = dataMap.get("CustomerRequestIds");
         List<String> activeUserIds = dataMap.get("ActiveUserIds");
@@ -1064,27 +1105,27 @@ public class DataBase extends HuyUtil
         List<CustomerRequest> customerRequests = new ArrayList<>();
         for (String customerRequestId : customerRequestIds)
         {
-            customerRequests.add(this.queryCustomerRequestData(customerRequestId, shop));
+            customerRequests.add(this.queryCustomerRequestData(customerRequestId));
         }
 
         List<User> activeUsers = new ArrayList<>();
         for (String userid : activeUserIds)
         {
-            activeUsers.add(this.queryUserData(userid, shop));
+            activeUsers.add(this.queryUserData(userid));
         }
 
-        activeShop = new ActiveShop(id, shop, customerRequests, activeUsers, this);
+        activeShop = new ActiveShop(id, shop, customerRequests, activeUsers);
         return activeShop;
     }
 
     //========================================Nested Class========================================
-    public class ActiveShopSystemRawData
+    public class ActiveShopRawData
     {
         private String id;
         private String shopId;
         private String json;
 
-        public ActiveShopSystemRawData(String id, String shopId, String json)
+        public ActiveShopRawData(String id, String shopId, String json)
         {
             this.id = id;
             this.shopId = shopId;

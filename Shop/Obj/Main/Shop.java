@@ -1,85 +1,146 @@
 package Obj.Main;
 
+import DataBase.DataBaseCtrl;
 import Obj.IAccount;
 import Obj.IMainObj;
 
 public class Shop implements IMainObj, IAccount
 {
     //==========================================Variable==========================================
-    // Shop
-    private String systemCode;
-
-    // IObj
+    private static final String KEY = "This is Private Key";
     private String id;
-
-    // IMainObj
     private String name;
-
-    // IAccount
     private String password;
+    private String systemCode;
+    private DataBaseCtrl dataBase;
+
+
 
     //========================================Constructor=========================================
     public Shop()
     {
-        super();
+        this.id = "";
+        this.name = "";
+        this.password = "";
         this.systemCode = "";
     }
 
-    public Shop(String id, String name, String password, String systemCode)
+    public Shop(String id, String name, String password, String systemCode, DataBaseCtrl dataBase)
     {
-        // Shop
-        this.systemCode = systemCode;
-
-        // IObj
         this.id = id;
-
-        // IMainObj
         this.name = name;
-
-        // IAccount
         this.password = password;
+        this.systemCode = systemCode;
+        this.dataBase = dataBase;
     }
 
-    //==========================================Get Set===========================================
-    public String getSystemCode() { return this.systemCode; }
-    public void setSystemCode(String systemCode) { this.systemCode = systemCode; }
 
-    //==========================================IAccount==========================================
-    @Override
-    public String getPassword()
-    {
-        return this.password;
-    }
 
-    @Override
-    public void setPassword(String password)
-    {
-        this.password = password;
-    }
-
-    //==========================================IMainObj==========================================
-    @Override
-    public String getName()
-    {
-        return this.name;
-    }
-
-    @Override
-    public void setName(String name)
-    {
-        this.name = name;
-    }
-
-    //============================================IObj============================================
+    //============================================Get=============================================
+    //=====================================Get DataBase Data======================================
     @Override
     public String getId()
     {
+        this.queryInfo();
         return this.id;
     }
-
     @Override
-    public void setId(String id)
+    public String getName()
     {
-        this.id = id;
+        this.queryInfo();
+        return this.name;
+    }
+    @Override
+    public String getPassword()
+    {
+        this.queryInfo();
+        return this.password;
+    }
+    public String getSystemCode()
+    {
+        this.queryInfo();
+        return this.systemCode;
+    }
+    public DataBaseCtrl getDataBase()
+    {
+        return this.dataBase;
+    }
+
+    //=======================================Get Curr Data========================================
+    @Override
+    public String getId(String privateKey)
+    {
+        if (!KEY.equals(privateKey)) return null;
+        return this.id;
+    }
+    @Override
+    public String getName(String privateKey)
+    {
+        if (!KEY.equals(privateKey)) return null;
+        return this.name;
+    }
+    @Override
+    public String getPassword(String privateKey)
+    {
+        if (!KEY.equals(privateKey)) return null;
+        return this.password;
+    }
+    public String getSystemCode(String privateKey)
+    {
+        if (!KEY.equals(privateKey)) return null;
+        return this.systemCode;
+    }
+
+    public DataBaseCtrl getDataBase(String privateKey)
+    {
+        if (!KEY.equals(privateKey)) return null;
+        return this.dataBase;
+    }
+
+
+
+    //===========================================Modify===========================================
+    @Override
+    public void setName(String name)
+    {
+        this.queryInfo();
+        this.name = name;
+        this.updateInfo();
+    }
+    @Override
+    public void setPassword(String password)
+    {
+        this.queryInfo();
+        this.password = password;
+        this.updateInfo();
+    }
+    public void setSystemCode(String systemCode)
+    {
+        this.queryInfo();
+        this.systemCode = systemCode;
+        this.updateInfo();
+    }
+
+
+
+    //==========================================DataBase==========================================
+    private void queryInfo()
+    {
+        Shop shop = this.dataBase.queryShopData(this.id);
+        if (shop == null)
+        {
+            System.out.println("ERROR: Can't query Shop");
+            return;
+        }
+
+        this.name = shop.getName(KEY);
+        this.password = shop.getPassword(KEY);
+        this.systemCode = shop.getSystemCode(KEY);
+        this.dataBase = shop.getDataBase(KEY);
+    }
+
+    private void updateInfo()
+    {
+        this.dataBase.updateShopData(this);
     }
 }

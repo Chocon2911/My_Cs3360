@@ -1,57 +1,36 @@
 package HuySystem;
 
-import Obj.ItemStateType;
 import Obj.ItemType;
 import Obj.RankType;
 import Obj.UserType;
 
+import java.util.Random;
 import java.util.Scanner;
 
 public abstract class HuyUtil
 {
     private static final Scanner scanner = new Scanner(System.in);
 
-    //==========================================GetInput==========================================
-    protected boolean getInput(HuyString input)
+    //===========================================Other============================================
+    protected String getRandomStr(int length)
     {
-        try 
+        if (length <= 0)
         {
-            input.setValue(scanner.nextLine());
-            return true;
+            System.out.println("ERROR: getRandomStr(): length is <= 0");
+            return null;
         }
 
-        catch (Exception e)
-        {
-            return false;
-        }
-    }
+        Random rand = new Random();
+        String randChar = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        StringBuilder randStr = new StringBuilder();
 
-    protected boolean getInput(HuyInt input)
-    {
-        try
+        for (int i = 0; i < length; i++)
         {
-            input.setValue(Integer.parseInt(scanner.nextLine()));
-            return true;
+            int index = rand.nextInt(randChar.length());
+            randStr.append(randChar.charAt(index));
         }
 
-        catch (Exception e)
-        {
-            return false;
-        }
-    }
-
-    protected boolean getInput(HuyFloat input)
-    {
-        try
-        {
-            input.setValue(Float.parseFloat(scanner.nextLine()));
-            return true;
-        }
-
-        catch (Exception e)
-        {
-            return false;
-        }
+        return randStr.toString();
     }
 
     //==========================================Convert===========================================

@@ -3,5 +3,5 @@ package Obj;
 public interface IObj
 {
     public String getId();
-    public void setId(String id);
+    public String getId(String privateKey);
 }

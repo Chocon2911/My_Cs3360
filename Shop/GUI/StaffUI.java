@@ -2,7 +2,6 @@ package GUI;
 
 import HuySystem.HuyGuiUtil;
 import Obj.Main.User;
-import Obj.Main.Account.User.Staff;
 import Obj.UserType;
 
 import javax.swing.*;
@@ -22,7 +21,7 @@ public class StaffUI extends HuyGuiUtil
         staff.setUserType(UserType.Staff);
     }
 
-    public StaffUI(Staff staff)
+    public StaffUI(User staff)
     {
         this.staff = staff;
     }

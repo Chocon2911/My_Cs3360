@@ -1,11 +1,11 @@
 package App;
 
-import DataBase.DataBase;
+import DataBase.DataBaseCtrl;
 
 public class Main
 {
     public static void main(String[] args)
     {
-         DataBase dataBase = new DataBase();
+         DataBaseCtrl dataBase = new DataBaseCtrl();
     }
 }

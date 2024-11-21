@@ -5,7 +5,7 @@ import java.sql.*;
 public class SQLiteExample {
     public static void main(String[] args) {
         // Đường dẫn đến file database
-        String url = "jdbc:sqlite:./DataBase/mydatabase.db";
+        String url = "jdbc:sqlite:./DataBaseCtrl/mydatabase.db";
 
         // Kết nối đến cơ sở dữ liệu
         try (Connection conn = DriverManager.getConnection(url))

@@ -3,7 +3,7 @@ package HuySystem;
 import javax.swing.*;
 import java.awt.*;
 
-public class HuyGuiUtil
+public class HuyGuiUtil extends HuyUtil
 {
     protected void setFixedSize(JComponent component, int width, int height)
     {
@@ -15,6 +15,18 @@ public class HuyGuiUtil
     protected void setAlignmentCenter(JComponent component)
     {
         component.setAlignmentX(Component.CENTER_ALIGNMENT);
+        component.setAlignmentY(Component.CENTER_ALIGNMENT);
+    }
+
+    protected void setAlignmentCenterLeft(JComponent component)
+    {
+        component.setAlignmentX(Component.LEFT_ALIGNMENT);
+        component.setAlignmentY(Component.CENTER_ALIGNMENT);
+    }
+
+    protected void setAlignmentCenterRight(JComponent component)
+    {
+        component.setAlignmentX(Component.RIGHT_ALIGNMENT);
         component.setAlignmentY(Component.CENTER_ALIGNMENT);
     }
 
