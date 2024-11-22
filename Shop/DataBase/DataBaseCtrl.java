@@ -16,7 +16,7 @@ import Obj.Side.CustomerRequest;
 import Obj.Side.OrderedItem;
 import com.google.gson.Gson;
 
-public class DataBaseCtrl extends HuyUtil
+public class DataBaseCtrl extends AbstractKey
 {
 
     public DataBaseCtrl()
@@ -33,7 +33,7 @@ public class DataBaseCtrl extends HuyUtil
     // Connection
     private Connection getConnection()
     {
-        String dataBaseUrl = "jdbc:sqlite:./DataBaseCtrl/ShopDataBase.db";
+        String dataBaseUrl = "jdbc:sqlite:./DataBase/ShopDataBase.db";
         try
         {
             Connection conn = DriverManager.getConnection(dataBaseUrl);
@@ -120,11 +120,12 @@ public class DataBaseCtrl extends HuyUtil
         String insert = "INSERT INTO Users (Id, ShopId, Name, Password, UserType) VALUES (?, ?, ?, ?, ?)";
         try (PreparedStatement preStatement = conn.prepareStatement(insert))
         {
-            preStatement.setString(1, user.getId());
-            preStatement.setString(2, user.getShop().getId());
-            preStatement.setString(3, user.getName());
-            preStatement.setString(4, user.getPassword());
-            preStatement.setInt(5, this.getIntFromUserType(user.getUserType()));
+            String privateKey = this.getKey();
+            preStatement.setString(1, user.getId(privateKey));
+            preStatement.setString(2, user.getShop().getId(privateKey));
+            preStatement.setString(3, user.getName(privateKey));
+            preStatement.setString(4, user.getPassword(privateKey));
+            preStatement.setInt(5, this.getIntFromUserType(user.getUserType(privateKey)));
             preStatement.executeUpdate();
 
             System.out.println("Insert User Data");
@@ -264,12 +265,13 @@ public class DataBaseCtrl extends HuyUtil
         if (conn == null) return;
 
         Gson gson = new Gson();
+        String privateKey = this.getKey();
 
-        String id = customerRequest.getId();
-        String shopId = customerRequest.getShop().getId();
-        String staffId = customerRequest.getHandledStaff().getId();
-        String customerId = customerRequest.getRequestedCustomer().getId();
-        String json = gson.toJson(customerRequest.getRequestedItemAmounts());
+        String id = customerRequest.getId(privateKey);
+        String shopId = customerRequest.getShop().getId(privateKey);
+        String staffId = customerRequest.getHandledStaff().getId(privateKey);
+        String customerId = customerRequest.getRequestedCustomer().getId(privateKey);
+        String json = gson.toJson(customerRequest.getRequestedItemAmounts(privateKey));
 
         String insert = "INSERT INTO CustomerRequests "
                 + "(Id, ShopId, CustomerId, StaffId, ItemAmounts_Json) "
@@ -452,12 +454,14 @@ public class DataBaseCtrl extends HuyUtil
         Connection conn = getConnection();
         if (conn == null) return;
 
-        String id = item.getId();
-        String shopId = item.getShop().getId();
-        String name = item.getName();
-        float price = item.getPrice();
-        int itemTypeInt = getIntFromItemType(item.getItemType());
-        int initAmount = item.getInitAmount();
+        String privateKey = this.getKey();
+
+        String id = item.getId(privateKey);
+        String shopId = item.getShop().getId(privateKey);
+        String name = item.getName(privateKey);
+        float price = item.getPrice(privateKey);
+        int itemTypeInt = getIntFromItemType(item.getItemType(privateKey));
+        int initAmount = item.getInitAmount(privateKey);
 
         Gson gson = new Gson();
         String ItemAmounts_Json = gson.toJson(item.getItemAmounts());
@@ -575,14 +579,15 @@ public class DataBaseCtrl extends HuyUtil
         if (conn == null) return;
 
         Gson gson = new Gson();
+        String privateKey = this.getKey();
 
-        String id = item.getId();
-        String name = item.getName();
-        float price = item.getPrice();
-        int itemTypeInt = getIntFromItemType(item.getItemType());
-        int initAmount = item.getInitAmount();
-        String ItemAmounts_Json = gson.toJson(item.getItemAmounts());
-        String description = item.getDescription();
+        String id = item.getId(privateKey);
+        String name = item.getName(privateKey);
+        float price = item.getPrice(privateKey);
+        int itemTypeInt = getIntFromItemType(item.getItemType(privateKey));
+        int initAmount = item.getInitAmount(privateKey);
+        String ItemAmounts_Json = gson.toJson(item.getItemAmounts(privateKey));
+        String description = item.getDescription(privateKey);
 
         String update = "UPDATE Items SET "
                 + "Name = ?, "
@@ -658,11 +663,13 @@ public class DataBaseCtrl extends HuyUtil
                 + "(Id, ShopId, ItemId, Amount, IsSold) VALUES (?, ?, ?, ?, ?)";
         try (PreparedStatement preStatement = conn.prepareStatement(insert))
         {
-            preStatement.setString(1, orderedItem.getId());
-            preStatement.setString(2, orderedItem.getShop().getId());
-            preStatement.setString(3, orderedItem.getItem().getId());
-            preStatement.setInt(4, orderedItem.getAmount());
-            preStatement.setBoolean(5, orderedItem.getIsSold());
+            String privateKey = this.getKey();
+
+            preStatement.setString(1, orderedItem.getId(privateKey));
+            preStatement.setString(2, orderedItem.getShop().getId(privateKey));
+            preStatement.setString(3, orderedItem.getItem().getId(privateKey));
+            preStatement.setInt(4, orderedItem.getAmount(privateKey));
+            preStatement.setBoolean(5, orderedItem.getIsSold(privateKey));
             preStatement.executeUpdate();
 
             System.out.println("Insert OrderedItems Data");
@@ -808,10 +815,12 @@ public class DataBaseCtrl extends HuyUtil
         Connection conn = getConnection();
         if (conn == null) return;
 
-        String id = shop.getId();
-        String name = shop.getName();
-        String password = shop.getPassword();
-        String systemCode = shop.getSystemCode();
+        String privateKey = this.getKey();
+
+        String id = shop.getId(privateKey);
+        String name = shop.getName(privateKey);
+        String password = shop.getPassword(privateKey);
+        String systemCode = shop.getSystemCode(privateKey);
 
         String insertData = "INSERT INTO Shops (Id, Name, Password, SystemCode) VALUES (?, ?, ?, ?)";
         try (PreparedStatement preStatement = conn.prepareStatement(insertData))
@@ -895,10 +904,12 @@ public class DataBaseCtrl extends HuyUtil
         Connection conn = getConnection();
         if (conn == null) return;
 
-        String id = shop.getId();
-        String name = shop.getName();
-        String password = shop.getPassword();
-        String systemCode = shop.getSystemCode();
+        String privateKey = this.getKey();
+
+        String id = shop.getId(privateKey);
+        String name = shop.getName(privateKey);
+        String password = shop.getPassword(privateKey);
+        String systemCode = shop.getSystemCode(privateKey);
 
         String update = "UPDATE Shops SET "
                 + "Name = ?, "
@@ -1076,11 +1087,13 @@ public class DataBaseCtrl extends HuyUtil
     // Other
     private ActiveShopRawData getRawDataFromActiveShop(ActiveShop activeShop)
     {
-        String id = activeShop.getId();
-        String shopId = activeShop.getShop().getId();
+        String privateKey = this.getKey();
 
-        List<String> customerRequestIds = activeShop.getCustomerRequestIds();
-        List<String> activeUserIds = activeShop.getActiveUserIds();
+        String id = activeShop.getId(privateKey);
+        String shopId = activeShop.getShop().getId(privateKey);
+
+        List<String> customerRequestIds = activeShop.getCustomerRequestIds(privateKey);
+        List<String> activeUserIds = activeShop.getActiveUserIds(privateKey);
 
         HashMap<String, List<String>> dataMap = new HashMap<>();
         dataMap.put("CustomerRequestIds", customerRequestIds);

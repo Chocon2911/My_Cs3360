@@ -1,15 +1,10 @@
 package Obj.Main;
 
-import Obj.IAccount;
-import Obj.IMainObj;
-import Obj.IShopChild;
-import Obj.Side.ActiveShop;
-import Obj.UserType;
+import Obj.*;
 
-public class User implements IMainObj, IAccount, IShopChild
+public class User extends AbstractKey implements IMainObj, IAccount, IShopChild
 {
     //==========================================Variable==========================================
-    private static final String KEY = "This is Private Key";
     private String id;
     private String name;
     private String password;
@@ -76,30 +71,30 @@ public class User implements IMainObj, IAccount, IShopChild
     @Override
     public String getId(String privateKey)
     {
-        if (!KEY.equals(privateKey)) return null;
+        if (!this.getKey().equals(privateKey)) return null;
         return this.id;
     }
     @Override
     public String getName(String privateKey)
     {
-        if (!KEY.equals(privateKey)) return null;
+        if (!this.getKey().equals(privateKey)) return null;
         return this.name;
     }
     @Override
     public String getPassword(String privateKey)
     {
-        if (!KEY.equals(privateKey)) return null;
+        if (!this.getKey().equals(privateKey)) return null;
         return this.password;
     }
     @Override
     public Shop getShop(String privateKey)
     {
-        if (!KEY.equals(privateKey)) return null;
+        if (!this.getKey().equals(privateKey)) return null;
         return this.shop;
     }
     public UserType getUserType(String privateKey)
     {
-        if (!KEY.equals(privateKey)) return null;
+        if (!this.getKey().equals(privateKey)) return null;
         return this.userType;
     }
 
@@ -139,10 +134,10 @@ public class User implements IMainObj, IAccount, IShopChild
             return;
         }
 
-        this.shop = user.getShop(KEY);
-        this.name = user.getName(KEY);
-        this.password = user.getPassword(KEY);
-        this.userType = user.getUserType(KEY);
+        this.shop = user.getShop(this.getKey());
+        this.name = user.getName(this.getKey());
+        this.password = user.getPassword(this.getKey());
+        this.userType = user.getUserType(this.getKey());
     }
 
     private void updateInfo()

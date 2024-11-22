@@ -1,13 +1,13 @@
 package Obj.Main;
 
 import DataBase.DataBaseCtrl;
+import Obj.AbstractKey;
 import Obj.IAccount;
 import Obj.IMainObj;
 
-public class Shop implements IMainObj, IAccount
+public class Shop extends AbstractKey implements IMainObj, IAccount
 {
     //==========================================Variable==========================================
-    private static final String KEY = "This is Private Key";
     private String id;
     private String name;
     private String password;
@@ -70,30 +70,30 @@ public class Shop implements IMainObj, IAccount
     @Override
     public String getId(String privateKey)
     {
-        if (!KEY.equals(privateKey)) return null;
+        if (!this.getKey().equals(privateKey)) return null;
         return this.id;
     }
     @Override
     public String getName(String privateKey)
     {
-        if (!KEY.equals(privateKey)) return null;
+        if (!this.getKey().equals(privateKey)) return null;
         return this.name;
     }
     @Override
     public String getPassword(String privateKey)
     {
-        if (!KEY.equals(privateKey)) return null;
+        if (!this.getKey().equals(privateKey)) return null;
         return this.password;
     }
     public String getSystemCode(String privateKey)
     {
-        if (!KEY.equals(privateKey)) return null;
+        if (!this.getKey().equals(privateKey)) return null;
         return this.systemCode;
     }
 
     public DataBaseCtrl getDataBase(String privateKey)
     {
-        if (!KEY.equals(privateKey)) return null;
+        if (!this.getKey().equals(privateKey)) return null;
         return this.dataBase;
     }
 
@@ -133,10 +133,10 @@ public class Shop implements IMainObj, IAccount
             return;
         }
 
-        this.name = shop.getName(KEY);
-        this.password = shop.getPassword(KEY);
-        this.systemCode = shop.getSystemCode(KEY);
-        this.dataBase = shop.getDataBase(KEY);
+        this.name = shop.getName(this.getKey());
+        this.password = shop.getPassword(this.getKey());
+        this.systemCode = shop.getSystemCode(this.getKey());
+        this.dataBase = shop.getDataBase(this.getKey());
     }
 
     private void updateInfo()

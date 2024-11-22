@@ -1,17 +1,16 @@
 package Obj.Side;
 
+import Obj.AbstractKey;
 import Obj.IShopChild;
 import Obj.Main.Shop;
 import Obj.Main.User;
-import com.sun.net.httpserver.Request;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class CustomerRequest implements IShopChild
+public class CustomerRequest extends AbstractKey implements IShopChild
 {
     //==========================================Variable==========================================
-    private static final String KEY = "This is Private Key";
     private String id;
     private Shop shop;
     private User requestedCustomer;
@@ -90,28 +89,28 @@ public class CustomerRequest implements IShopChild
     @Override
     public Shop getShop(String privateKey)
     {
-        if (!KEY.equals(privateKey)) return null;
+        if (!this.getKey().equals(privateKey)) return null;
         return this.shop;
     }
     @Override
     public String getId(String privateKey)
     {
-        if (!KEY.equals(privateKey)) return null;
+        if (!this.getKey().equals(privateKey)) return null;
         return this.id;
     }
     public User getRequestedCustomer(String privateKey)
     {
-        if (!KEY.equals(privateKey)) return null;
+        if (!this.getKey().equals(privateKey)) return null;
         return this.requestedCustomer;
     }
     public User getHandledStaff(String privateKey)
     {
-        if (!KEY.equals(privateKey)) return null;
+        if (!this.getKey().equals(privateKey)) return null;
         return this.handledStaff;
     }
     public List<OrderedItem> getRequestedItemAmounts(String privateKey)
     {
-        if (!KEY.equals(privateKey)) return null;
+        if (!this.getKey().equals(privateKey)) return null;
         return this.requestedOrderedItems;
     }
 
@@ -149,10 +148,10 @@ public class CustomerRequest implements IShopChild
             return;
         }
 
-        this.shop = customerRequest.getShop(KEY);
-        this.requestedCustomer = customerRequest.getRequestedCustomer(KEY);
-        this.handledStaff = customerRequest.getHandledStaff(KEY);
-        this.requestedOrderedItems = customerRequest.getRequestedItemAmounts(KEY);
+        this.shop = customerRequest.getShop(this.getKey());
+        this.requestedCustomer = customerRequest.getRequestedCustomer(this.getKey());
+        this.handledStaff = customerRequest.getHandledStaff(this.getKey());
+        this.requestedOrderedItems = customerRequest.getRequestedItemAmounts(this.getKey());
     }
 
     private void updateInfo()

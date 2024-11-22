@@ -1,13 +1,13 @@
 package Obj.Side;
 
+import Obj.AbstractKey;
 import Obj.IShopChild;
 import Obj.Main.Item;
 import Obj.Main.Shop;
 
-public class OrderedItem implements IShopChild
+public class OrderedItem extends AbstractKey implements IShopChild
 {
     //==========================================Variable==========================================
-    private static final String KEY = "This is Private Key";
     private String id;
     private Shop shop;
     private Item item;
@@ -79,28 +79,28 @@ public class OrderedItem implements IShopChild
     @Override
     public String getId(String privateKey)
     {
-        if (!KEY.equals(privateKey)) return null;
+        if (!this.getKey().equals(privateKey)) return null;
         return this.id;
     }
     @Override
     public Shop getShop(String privateKey)
     {
-        if (!KEY.equals(privateKey)) return null;
+        if (!this.getKey().equals(privateKey)) return null;
         return this.shop;
     }
     public Item getItem(String privateKey)
     {
-        if (!KEY.equals(privateKey)) return null;
+        if (!this.getKey().equals(privateKey)) return null;
         return this.item;
     }
     public int getAmount(String privateKey)
     {
-        if (!KEY.equals(privateKey)) return -1;
+        if (!this.getKey().equals(privateKey)) return -1;
         return this.amount;
     }
     public Boolean getIsSold(String privateKey)
     {
-        if (!KEY.equals(privateKey)) return null;
+        if (!this.getKey().equals(privateKey)) return null;
         return this.isSold;
     }
 
@@ -138,10 +138,10 @@ public class OrderedItem implements IShopChild
             return;
         }
 
-        this.shop = orderedItem.getShop(KEY);
-        this.item = orderedItem.getItem(KEY);
-        this.amount = orderedItem.getAmount(KEY);
-        this.isSold = orderedItem.getIsSold(KEY);
+        this.shop = orderedItem.getShop(this.getKey());
+        this.item = orderedItem.getItem(this.getKey());
+        this.amount = orderedItem.getAmount(this.getKey());
+        this.isSold = orderedItem.getIsSold(this.getKey());
     }
 
     private void updateInfo()

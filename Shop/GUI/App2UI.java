@@ -367,11 +367,24 @@ public class App2UI extends HuyGuiUtil
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                String SystemCode = systemCodeField.getText();
+                String systemCode = systemCodeField.getText();
                 String name = nameField.getText();
                 String password = String.valueOf(passwordField.getPassword());
 
-                Shop newShop = createShop(name, password, SystemCode);
+                System.out.println("System Code: " + systemCode);
+                System.out.println("Name: " + name);
+                System.out.println("Password: " + password);
+
+                if (systemCode.isEmpty() || name.isEmpty() || password.isEmpty())
+                {
+                    System.out.println("Text Field is Empty");
+                    JOptionPane.showMessageDialog(null, "Text Field is Empty");
+                }
+
+                else
+                {
+                    Shop newShop = createShop(name, password, systemCode);
+                }
             }
         });
         buttonPanel.add(registerButton);

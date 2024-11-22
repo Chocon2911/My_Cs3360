@@ -1,5 +1,6 @@
 package Obj.Side;
 
+import Obj.AbstractKey;
 import Obj.IShopChild;
 import Obj.Main.Shop;
 import Obj.Main.User;
@@ -7,11 +8,9 @@ import Obj.Main.User;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ActiveShop implements IShopChild
+public class ActiveShop extends AbstractKey implements IShopChild
 {
     //==========================================Variable==========================================
-    // ActiveShop
-    private static final String KEY = "This is Private Key";
     private String id;
     private Shop shop;
     private List<CustomerRequest> customerRequests;
@@ -66,9 +65,10 @@ public class ActiveShop implements IShopChild
     }
 
     // Additional
-    public List<String> getCustomerRequestIds()
+    public List<String> getCustomerRequestIds(String privateKey)
     {
-        this.queryInfo();
+        if (!this.getKey().equals(privateKey)) return null;
+
         List<String> results = new ArrayList<String>();
         for (CustomerRequest customerRequest : this.customerRequests)
         {
@@ -78,9 +78,10 @@ public class ActiveShop implements IShopChild
         return results;
     }
 
-    public List<String> getActiveUserIds()
+    public List<String> getActiveUserIds(String privateKey)
     {
-        this.queryInfo();
+        if (!this.getKey().equals(privateKey)) return null;
+
         List<String> results = new ArrayList<>();
         for (User activeUser : this.activeUsers)
         {
@@ -94,23 +95,23 @@ public class ActiveShop implements IShopChild
     @Override
     public String getId(String privateKey)
     {
-        if (!KEY.equals(privateKey)) return null;
+        if (!this.getKey().equals(privateKey)) return null;
         return this.id;
     }
     @Override
     public Shop getShop(String privateKey)
     {
-        if (!KEY.equals(privateKey)) return null;
+        if (!this.getKey().equals(privateKey)) return null;
         return this.shop;
     }
     public List<User> getActiveUsers(String privateKey)
     {
-        if (!KEY.equals(privateKey)) return null;
+        if (!this.getKey().equals(privateKey)) return null;
         return this.activeUsers;
     }
     public List<CustomerRequest> getCustomerRequests(String privateKey)
     {
-        if (!KEY.equals(privateKey)) return null;
+        if (!this.getKey().equals(privateKey)) return null;
         return this.customerRequests;
     }
 
@@ -142,9 +143,9 @@ public class ActiveShop implements IShopChild
             return;
         }
 
-        this.shop = activeShop.getShop(KEY);
-        this.activeUsers = activeShop.getActiveUsers(KEY);
-        this.customerRequests = activeShop.getCustomerRequests(KEY);
+        this.shop = activeShop.getShop(this.getKey());
+        this.activeUsers = activeShop.getActiveUsers(this.getKey());
+        this.customerRequests = activeShop.getCustomerRequests(this.getKey());
     }
 
     private void updateInfo()

@@ -1,5 +1,6 @@
 package Obj.Main;
 
+import Obj.AbstractKey;
 import Obj.IMainObj;
 import Obj.IShopChild;
 import Obj.ItemType;
@@ -8,13 +9,12 @@ import Obj.Side.OrderedItem;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Item implements IMainObj, IShopChild
+public class Item extends AbstractKey implements IMainObj, IShopChild
 {
     //==========================================Variable==========================================
     private String id;
     private String name;
     private Shop shop;
-    private static final String KEY = "This is Private Key";
     private float price;
     private ItemType itemType;
     private int initAmount;
@@ -128,44 +128,44 @@ public class Item implements IMainObj, IShopChild
     @Override
     public String getId(String privateKey)
     {
-        if (!KEY.equals(privateKey)) return null;
+        if (!this.getKey().equals(privateKey)) return null;
         return this.id;
     }
     @Override
     public String getName(String privateKey)
     {
-        if (!KEY.equals(privateKey)) return null;
+        if (!this.getKey().equals(privateKey)) return null;
         return this.name;
     }
     @Override
     public Shop getShop(String privateKey)
     {
-        if (!KEY.equals(privateKey)) return null;
+        if (!this.getKey().equals(privateKey)) return null;
         return this.shop;
     }
     public float getPrice(String privateKey)
     {
-        if (!KEY.equals(privateKey)) return -1;
+        if (!this.getKey().equals(privateKey)) return -1;
         return this.price;
     }
     public ItemType getItemType(String privateKey)
     {
-        if (!KEY.equals(privateKey)) return null;
+        if (!this.getKey().equals(privateKey)) return null;
         return this.itemType;
     }
     public int getInitAmount(String privateKey)
     {
-        if (!KEY.equals(privateKey)) return -1;
+        if (!this.getKey().equals(privateKey)) return -1;
         return this.initAmount;
     }
     public List<OrderedItem> getItemAmounts(String privateKey)
     {
-        if (!KEY.equals(privateKey)) return null;
+        if (!this.getKey().equals(privateKey)) return null;
         return this.orderedItems;
     }
     public String getDescription(String privateKey)
     {
-        if (!KEY.equals(privateKey)) return null;
+        if (!this.getKey().equals(privateKey)) return null;
         return this.description;
     }
 
@@ -222,12 +222,12 @@ public class Item implements IMainObj, IShopChild
             return;
         }
 
-        this.shop = item.getShop(KEY);
-        this.name = item.getName(KEY);
-        this.price = item.getPrice(KEY);
-        this.itemType = item.getItemType(KEY);
-        this.initAmount = item.getInitAmount(KEY);
-        this.description = item.getDescription(KEY);
+        this.shop = item.getShop(this.getKey());
+        this.name = item.getName(this.getKey());
+        this.price = item.getPrice(this.getKey());
+        this.itemType = item.getItemType(this.getKey());
+        this.initAmount = item.getInitAmount(this.getKey());
+        this.description = item.getDescription(this.getKey());
     }
 
     private void updateInfo()
